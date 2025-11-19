@@ -1,0 +1,29 @@
+{
+    "type": "FeatureCollection",
+    "name": "Eval 2 Marejadas",
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -71.626963,
+                    -33.038295,
+                    0.0
+                ]
+            },
+            "properties": {
+                "start": "2025-11-18T17:09:11.465-03:00",
+                "end": "2025-11-18T17:10:10.068-03:00",
+                "fecha_evento": "2025-11-18",
+                "hora_evento": "17:15:00.000-03:00",
+                "tipo_afectacion": "inundacion_vereda",
+                "nivel_danio": "1",
+                "altura_agua": "10",
+                "foto_evento": "Captura de pantalla 2025-11-18 164056-17_10_3.png",
+                "comentarios": "test2",
+                "estado_validacion": "pendiente"
+            }
+        }
+    ]
+}
