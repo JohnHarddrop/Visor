@@ -1,9 +1,30 @@
 // 1. Crear mapa base
 var map = L.map('map').setView([-33.04, -71.62], 14); // Ajusta la posición inicial y zoom del mapa
 
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+// Añadir capas base (OpenStreetMap, Terrain, Satellite)
+var osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
     attribution: '&copy; OpenStreetMap contributors'
+});
+
+var terrainLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; OpenStreetMap contributors'
+});
+
+var satelliteLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; OpenStreetMap contributors'
+});
+
+// Por defecto, OpenStreetMap
+osmLayer.addTo(map);
+
+// Añadir control de capas para cambiar el fondo del mapa
+L.control.layers({
+    "OpenStreetMap": osmLayer,
+    "Terrain": terrainLayer,
+    "Satellite": satelliteLayer
 }).addTo(map);
 
 // 2. Estilo para los puntos (según nivel de daño)
@@ -40,8 +61,10 @@ function popup(feature, layer) {
 fetch("data/marejadas.geojson")
   .then(r => r.json())
   .then(data => {
-
       console.log("DATA CRUDA:", data);
+
+      // Llamamos a la función para mostrar las estadísticas
+      mostrarEstadisticas(data.features);
 
       // Creamos una capa de GeoJSON con los datos
       const capa = {
@@ -60,7 +83,7 @@ fetch("data/marejadas.geojson")
   })
   .catch(err => console.error("ERROR cargando GeoJSON local:", err));
 
-  // 5. Filtrar puntos según el tipo de afectación y nivel de urgencia
+// 5. Filtrar puntos según el tipo de afectación y nivel de urgencia
 document.getElementById('filter-form').addEventListener('submit', function(event) {
     event.preventDefault();
 
@@ -102,7 +125,7 @@ document.getElementById('filter-form').addEventListener('submit', function(event
     }).addTo(map);
 });
 
-
+// Mostrar las estadísticas de los datos
 function mostrarEstadisticas(data) {
     // Contar el total de reportes
     const totalReportes = data.length;
@@ -135,6 +158,7 @@ function mostrarEstadisticas(data) {
     `;
 }
 
+// Función para abrir el formulario KoboToolbox en un pop-up
 document.getElementById('open-kobo-form').addEventListener('click', () => {
     const popup = window.open("", "Formulario Kobo", "width=600,height=600");
     popup.document.write("<h1>Formulario KoboToolbox</h1><iframe src='https://kf.kobotoolbox.org/#/forms/ayaSMRju2NSadmpKwoUsCz' width='100%' height='100%'></iframe>");
