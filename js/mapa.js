@@ -85,9 +85,8 @@ fetch("data/marejadas.geojson")
 
 // 5. Filtrar puntos según el tipo de afectación y nivel de urgencia
 document.getElementById('filter-form').addEventListener('submit', function(event) {
-    event.preventDefault();
+    event.preventDefault(); // Evita la recarga de la página
 
-    // Obtener los valores seleccionados
     const filterType = document.getElementById('filter-type').value;
     const filterUrgency = document.getElementById('filter-urgency').value;
 
@@ -125,9 +124,7 @@ document.getElementById('filter-form').addEventListener('submit', function(event
     }).addTo(map);
 });
 
-// Mostrar las estadísticas de los datos
 function mostrarEstadisticas(data) {
-    // Contar el total de reportes
     const totalReportes = data.length;
 
     // Contar los reportes por tipo de afectación
@@ -144,22 +141,22 @@ function mostrarEstadisticas(data) {
         return acc;
     }, {});
 
-    // Mostrar las estadísticas
+    // Mostrar las estadísticas de manera más ordenada
     document.getElementById('statistics-data').innerHTML = `
-        <p>Total de reportes: ${totalReportes}</p>
-        <p>Tipos de Afectación:</p>
+        <p><b>Total de reportes:</b> ${totalReportes}</p>
+        <p><b>Tipos de Afectación:</b></p>
         <ul>
-            ${Object.entries(tipoAfectacion).map(([key, value]) => `<li>${key}: ${value}</li>`).join('')}
+            ${Object.entries(tipoAfectacion).map(([key, value]) => `<li>${key.replace(/_/g, ' ').toUpperCase()}: ${value}</li>`).join('')}
         </ul>
-        <p>Niveles de Daño:</p>
+        <p><b>Niveles de Daño:</b></p>
         <ul>
             ${Object.entries(nivelDanio).map(([key, value]) => `<li>${key}: ${value}</li>`).join('')}
         </ul>
     `;
 }
 
-// Función para abrir el formulario KoboToolbox en un pop-up
+
+// Función para abrir el formulario de KoboToolbox en una nueva ventana
 document.getElementById('open-kobo-form').addEventListener('click', () => {
-    const popup = window.open("", "Formulario Kobo", "width=600,height=600");
-    popup.document.write("<h1>Formulario KoboToolbox</h1><iframe src='https://kf.kobotoolbox.org/#/forms/ayaSMRju2NSadmpKwoUsCz' width='100%' height='100%'></iframe>");
+    window.open("https://ee.kobotoolbox.org/x/WpH0FcYu", "_blank");
 });
