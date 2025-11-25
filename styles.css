@@ -1,0 +1,144 @@
+body { overflow: hidden; }
+
+.navbar-offset { margin-top: 50px; }
+#map { position: absolute; top: 50px; bottom: 0px; left: 0px; right: 0px; }
+#map .ol-zoom { font-size: 1.2em; }
+
+.zoom-top-opened-sidebar { margin-top: 5px; }
+.zoom-top-collapsed { margin-top: 45px; }
+
+.mini-submenu{
+  display:none;  
+  background-color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.9);
+  border-radius: 4px;
+  padding: 9px;  
+  width: 42px;
+  text-align: center;
+}
+
+.mini-submenu-left {
+  position: absolute;
+  top: 60px;
+  left: .5em;
+  z-index: 40;
+}
+
+#map { z-index: 35; }
+
+.sidebar { z-index: 45; }
+
+.main-row { position: relative; top: 0; }
+
+.mini-submenu:hover{
+  cursor: pointer;
+}
+
+.slide-submenu{
+  background: rgba(0, 0, 0, 0.45);
+  display: inline-block;
+  padding: 0 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Leyenda integrada en el mapa - POSICIÓN CORREGIDA */
+#legend {
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 12px;
+  position: absolute;
+  bottom: 20px;
+  right: 10px;
+  border-radius: 5px;
+  z-index: 1000;
+  max-width: 220px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.legend-color {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+  border: 1px solid #333;
+}
+
+/* Estilos para filtros y estadísticas */
+#filters, #statistics {
+  padding: 10px;
+  margin: 10px 0;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+}
+
+.filter-group {
+  margin-bottom: 10px;
+}
+
+.filter-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.filter-group select, .filter-group input {
+  width: 100%;
+  padding: 5px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.btn-kobo {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.btn-kobo:hover {
+  background-color: #45a049;
+}
+
+.stat-item {
+  margin-bottom: 8px;
+  padding: 8px;
+  background-color: #e9ecef;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.stat-value {
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+.popup-content {
+  max-width: 300px;
+}
+
+.popup-image {
+  max-width: 100%;
+  height: auto;
+  margin: 5px 0;
+}
+
+.loading-message {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 20px;
+  border-radius: 5px;
+  z-index: 1000;
+  text-align: center;
+}
