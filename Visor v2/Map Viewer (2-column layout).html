@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<!-- saved from url=(0078)https://jumpinjackie.github.io/bootstrap-viewer-template/2-column/index.html?# -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <link rel="stylesheet" href="./Map Viewer (2-column layout)_files/ol.css">
+    <link rel="stylesheet" href="./Map Viewer (2-column layout)_files/bootstrap.min.css">
+    <link rel="stylesheet" href="./Map Viewer (2-column layout)_files/font-awesome.min.css">
+    <title>Map Viewer (2-column layout)</title>
+    <style type="text/css">
+      body { overflow: hidden; }
+
+      .navbar-offset { margin-top: 50px; }
+      #map { position: absolute; top: 50px; bottom: 0px; left: 0px; right: 0px; }
+      #map .ol-zoom { font-size: 1.2em; }
+
+      .zoom-top-opened-sidebar { margin-top: 5px; }
+      .zoom-top-collapsed { margin-top: 45px; }
+
+      .mini-submenu{
+        display:none;  
+        background-color: rgba(255, 255, 255, 0.46);
+        border: 1px solid rgba(0, 0, 0, 0.9);
+        border-radius: 4px;
+        padding: 9px;  
+        /*position: relative;*/
+        width: 42px;
+        text-align: center;
+      }
+
+      .mini-submenu-left {
+        position: absolute;
+        top: 60px;
+        left: .5em;
+        z-index: 40;
+      }
+
+      #map { z-index: 35; }
+
+      .sidebar { z-index: 45; }
+
+      .main-row { position: relative; top: 0; }
+
+      .mini-submenu:hover{
+        cursor: pointer;
+      }
+
+      .slide-submenu{
+        background: rgba(0, 0, 0, 0.45);
+        display: inline-block;
+        padding: 0 8px;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+    </style>
+    <script type="text/javascript" src="./Map Viewer (2-column layout)_files/ol.js.descarga"></script>
+    <script type="text/javascript" src="./Map Viewer (2-column layout)_files/jquery-2.1.1.min.js.descarga"></script>
+    <script type="text/javascript" src="./Map Viewer (2-column layout)_files/bootstrap.min.js.descarga"></script>
+    <script type="text/javascript">
+
+      function applyMargins() {
+        var leftToggler = $(".mini-submenu-left");
+        if (leftToggler.is(":visible")) {
+          $("#map .ol-zoom")
+            .css("margin-left", 0)
+            .removeClass("zoom-top-opened-sidebar")
+            .addClass("zoom-top-collapsed");
+        } else {
+          $("#map .ol-zoom")
+            .css("margin-left", $(".sidebar-left").width())
+            .removeClass("zoom-top-opened-sidebar")
+            .removeClass("zoom-top-collapsed");
+        }
+      }
+
+      function isConstrained() {
+        return $(".sidebar").width() == $(window).width();
+      }
+
+      function applyInitialUIState() {
+        if (isConstrained()) {
+          $(".sidebar-left .sidebar-body").fadeOut('slide');
+          $('.mini-submenu-left').fadeIn();
+        }
+      }
+
+      $(function(){
+        $('.sidebar-left .slide-submenu').on('click',function() {
+          var thisEl = $(this);
+          thisEl.closest('.sidebar-body').fadeOut('slide',function(){
+            $('.mini-submenu-left').fadeIn();
+            applyMargins();
+          });
+        });
+
+        $('.mini-submenu-left').on('click',function() {
+          var thisEl = $(this);
+          $('.sidebar-left .sidebar-body').toggle('slide');
+          thisEl.hide();
+          applyMargins();
+        });
+
+        $(window).on("resize", applyMargins);
+
+        var map = new ol.Map({
+          target: "map",
+          layers: [
+            new ol.layer.Tile({
+              source: new ol.source.OSM()
+            })
+          ],
+          view: new ol.View({
+            center: [0, 0],
+            zoom: 2
+          })
+        });
+        applyInitialUIState();
+        applyMargins();
+      });
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <nav class="navbar navbar-fixed-top navbar-default" role="navigation">
+        <div class="container-fluid">
+          <!-- Brand and toggle get grouped for better mobile display -->
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://jumpinjackie.github.io/bootstrap-viewer-template/2-column/index.html?#">Map Viewer (2-column layout)</a>
+          </div>
+          <!-- Collect the nav links, forms, and other content for toggling -->
+          <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+              <li class="active"><a href="https://jumpinjackie.github.io/bootstrap-viewer-template/2-column/index.html?#">Link</a></li>
+              <li><a href="https://jumpinjackie.github.io/bootstrap-viewer-template/2-column/index.html?#">Link</a></li>
+              <li class="dropdown">
+                <a href="https://jumpinjackie.github.io/bootstrap-viewer-template/2-column/index.html?#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><a href="https://jumpinjackie.github.io/bootstrap-viewer-template/2-column/index.html?#">Action</a></li>
+                  <li><a href="https://jumpinjackie.github.io/bootstrap-viewer-template/2-column/index.html?#">Another action</a></li>
+                  <li><a href="https://jumpinjackie.github.io/bootstrap-viewer-template/2-column/index.html?#">Something else here</a></li>
+                  <li class="divider"></li>
+                  <li><a href="https://jumpinjackie.github.io/bootstrap-viewer-template/2-column/index.html?#">Separated link</a></li>
+                  <li class="divider"></li>
+                  <li><a href="https://jumpinjackie.github.io/bootstrap-viewer-template/2-column/index.html?#">One more separated link</a></li>
+                </ul>
+              </li>
+            </ul>
+            <form class="navbar-form navbar-left" role="search">
+              <div class="form-group">
+                <input type="text" class="form-control" placeholder="Search">
+              </div>
+              <button type="submit" class="btn btn-default">Submit</button>
+            </form>
+            <ul class="nav navbar-nav navbar-right">
+              <li><a href="https://jumpinjackie.github.io/bootstrap-viewer-template/2-column/index.html?#">Link</a></li>
+              <li class="dropdown">
+                <a href="https://jumpinjackie.github.io/bootstrap-viewer-template/2-column/index.html?#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><a href="https://jumpinjackie.github.io/bootstrap-viewer-template/2-column/index.html?#">Action</a></li>
+                  <li><a href="https://jumpinjackie.github.io/bootstrap-viewer-template/2-column/index.html?#">Another action</a></li>
+                  <li><a href="https://jumpinjackie.github.io/bootstrap-viewer-template/2-column/index.html?#">Something else here</a></li>
+                  <li class="divider"></li>
+                  <li><a href="https://jumpinjackie.github.io/bootstrap-viewer-template/2-column/index.html?#">Separated link</a></li>
+                </ul>
+              </li>
+            </ul>
+            </div><!-- /.navbar-collapse -->
+            </div><!-- /.container-fluid -->
+          </nav>
+        </div>
+      
+      <div class="navbar-offset"></div>
+      <div id="map">
+      <div class="ol-viewport" style="position: relative; overflow: hidden; width: 100%; height: 100%;"><canvas class="ol-unselectable" style="width: 100%; height: 100%;" width="1920" height="941"></canvas><div class="ol-overlaycontainer"></div><div class="ol-overlaycontainer-stopevent"><div class="ol-zoom ol-unselectable ol-control" style="margin-left: 458px;"><button class="ol-zoom-in ol-has-tooltip" type="button"><span role="tooltip">Zoom in</span>+</button><button class="ol-zoom-out  ol-has-tooltip" type="button"><span role="tooltip">Zoom out</span>−</button></div><div class="ol-rotate ol-unselectable ol-control" style="opacity: 0;"><button class="ol-rotate-reset ol-has-tooltip" name="ResetRotation" type="button"><span role="tooltip">Reset rotation</span><span class="ol-compass" style="transform: rotate(0deg);">⇧</span></button></div><div class="ol-attribution ol-unselectable ol-control ol-collapsed"><ul><li style=""><a href="http://openlayers.org/" target="_blank"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAA3NCSVQICAjb4U/gAAAACXBIWXMAAAHGAAABxgEXwfpGAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAAhNQTFRF////AP//AICAgP//AFVVQECA////K1VVSbbbYL/fJ05idsTYJFtbbcjbJllmZszWWMTOIFhoHlNiZszTa9DdUcHNHlNlV8XRIVdiasrUHlZjIVZjaMnVH1RlIFRkH1RkH1ZlasvYasvXVsPQH1VkacnVa8vWIVZjIFRjVMPQa8rXIVVkXsXRsNveIFVkIFZlIVVj3eDeh6GmbMvXH1ZkIFRka8rWbMvXIFVkIFVjIFVkbMvWH1VjbMvWIFVlbcvWIFVla8vVIFVkbMvWbMvVH1VkbMvWIFVlbcvWIFVkbcvVbMvWjNPbIFVkU8LPwMzNIFVkbczWIFVkbsvWbMvXIFVkRnB8bcvW2+TkW8XRIFVkIlZlJVloJlpoKlxrLl9tMmJwOWd0Omh1RXF8TneCT3iDUHiDU8LPVMLPVcLPVcPQVsPPVsPQV8PQWMTQWsTQW8TQXMXSXsXRX4SNX8bSYMfTYcfTYsfTY8jUZcfSZsnUaIqTacrVasrVa8jTa8rWbI2VbMvWbcvWdJObdcvUdszUd8vVeJaee87Yfc3WgJyjhqGnitDYjaarldPZnrK2oNbborW5o9bbo9fbpLa6q9ndrL3ArtndscDDutzfu8fJwN7gwt7gxc/QyuHhy+HizeHi0NfX0+Pj19zb1+Tj2uXk29/e3uLg3+Lh3+bl4uXj4ufl4+fl5Ofl5ufl5ujm5+jmySDnBAAAAFp0Uk5TAAECAgMEBAYHCA0NDg4UGRogIiMmKSssLzU7PkJJT1JTVFliY2hrdHZ3foSFhYeJjY2QkpugqbG1tre5w8zQ09XY3uXn6+zx8vT09vf4+Pj5+fr6/P39/f3+gz7SsAAAAVVJREFUOMtjYKA7EBDnwCPLrObS1BRiLoJLnte6CQy8FLHLCzs2QUG4FjZ5GbcmBDDjxJBXDWxCBrb8aM4zbkIDzpLYnAcE9VXlJSWlZRU13koIeW57mGx5XjoMZEUqwxWYQaQbSzLSkYGfKFSe0QMsX5WbjgY0YS4MBplemI4BdGBW+DQ11eZiymfqQuXZIjqwyadPNoSZ4L+0FVM6e+oGI6g8a9iKNT3o8kVzNkzRg5lgl7p4wyRUL9Yt2jAxVh6mQCogae6GmflI8p0r13VFWTHBQ0rWPW7ahgWVcPm+9cuLoyy4kCJDzCm6d8PSFoh0zvQNC5OjDJhQopPPJqph1doJBUD5tnkbZiUEqaCnB3bTqLTFG1bPn71kw4b+GFdpLElKIzRxxgYgWNYc5SCENVHKeUaltHdXx0dZ8uBI1hJ2UUDgq82CM2MwKeibqAvSO7MCABq0wXEPiqWEAAAAAElFTkSuQmCC"></a></li><li>Tiles © <a href="http://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC BY-SA</a></li><li>Data © <a href="http://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="http://www.openstreetmap.org/copyright">ODbL</a></li></ul><button class="ol-has-tooltip" type="button"><span>i</span><span role="tooltip">Attributions</span></button></div></div></div></div>
+      <div class="row main-row">
+        <div class="col-sm-4 col-md-3 sidebar sidebar-left pull-left">
+          <div class="panel-group sidebar-body" id="accordion-left" style="display: block;">
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <h4 class="panel-title">
+                  <a data-toggle="collapse" href="https://jumpinjackie.github.io/bootstrap-viewer-template/2-column/index.html?#layers">
+                    <i class="fa fa-list-alt"></i>
+                    Layers
+                  </a>
+                  <span class="pull-right slide-submenu">
+                    <i class="fa fa-chevron-left"></i>
+                  </span>
+                </h4>
+              </div>
+              <div id="layers" class="panel-collapse collapse in">
+                <div class="panel-body list-group">
+                  <a href="https://jumpinjackie.github.io/bootstrap-viewer-template/2-column/index.html?#" class="list-group-item">
+                    <i class="fa fa-globe"></i> Open Street Map
+                  </a>
+                  <a href="https://jumpinjackie.github.io/bootstrap-viewer-template/2-column/index.html?#" class="list-group-item">
+                    <i class="fa fa-globe"></i> Bing
+                  </a>
+                  <a href="https://jumpinjackie.github.io/bootstrap-viewer-template/2-column/index.html?#" class="list-group-item">
+                    <i class="fa fa-globe"></i> WMS
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <h4 class="panel-title">
+                  <a data-toggle="collapse" href="https://jumpinjackie.github.io/bootstrap-viewer-template/2-column/index.html?#properties">
+                    <i class="fa fa-list-alt"></i>
+                    Properties
+                  </a>
+                </h4>
+              </div>
+              <div id="properties" class="panel-collapse collapse in">
+                <div class="panel-body">
+                  <p>
+                  Lorem ipsum dolor sit amet, vel an wisi propriae. Sea ut graece gloriatur. Per ei quando dicant vivendum. An insolens appellantur eos, doctus convenire vis et, at solet aeterno intellegebat qui.
+                  </p>
+                  <p>
+                  Elitr minimum inciderint qui no. Ne mea quaerendum scriptorem consequuntur. Mel ea nobis discere dignissim, aperiam patrioque ei ius. Stet laboramus eos te, his recteque mnesarchum an, quo id adipisci salutatus. Quas solet inimicus eu per. Sonet conclusionemque id vis.
+                  </p>
+                  <p>
+                  Eam vivendo repudiandae in, ei pri sint probatus. Pri et lorem praesent periculis, dicam singulis ut sed. Omnis patrioque sit ei, vis illud impetus molestiae id. Ex viderer assentior mel, inani liber officiis pro et. Qui ut perfecto repudiandae, per no hinc tation labores.
+                  </p>
+                  <p>
+                  Pro cu scaevola antiopam, cum id inermis salutatus. No duo liber gloriatur. Duo id vitae decore, justo consequat vix et. Sea id tale quot vitae.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mini-submenu mini-submenu-left pull-left" style="display: none;">
+        <i class="fa fa-list-alt"></i>
+      </div>
+    
+  
+</body></html>

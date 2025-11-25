@@ -1,77 +1,430 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>WebGIS Marejadas</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-    <link rel="stylesheet" href="estilos.css" />
-    <style>
-        html, body { margin: 0; padding: 0; height: 100%; font-family: Arial, sans-serif; }
-        #map { width: 100%; height: 60vh; }
-        #header { background-color: #4CAF50; color: white; padding: 1rem; text-align: center; }
-        #filters { background-color: #f4f4f4; padding: 1rem; margin: 1rem 0; border-radius: 8px; }
-        #statistics { background-color: #f9f9f9; padding: 1rem; margin: 1rem 0; border-radius: 8px; }
-        #legend { background-color: rgba(255, 255, 255, 0.7); padding: 10px; position: absolute; top: 10px; left: 10px; border-radius: 5px; }
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@7.3.0/ol.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <title>WebGIS Catastro de Afectaciones por Desastres</title>
+    <style type="text/css">
+      body { overflow: hidden; }
+
+      .navbar-offset { margin-top: 50px; }
+      #map { position: absolute; top: 50px; bottom: 0px; left: 0px; right: 0px; }
+      #map .ol-zoom { font-size: 1.2em; }
+
+      .zoom-top-opened-sidebar { margin-top: 5px; }
+      .zoom-top-collapsed { margin-top: 45px; }
+
+      .mini-submenu{
+        display:none;  
+        background-color: rgba(255, 255, 255, 0.8);
+        border: 1px solid rgba(0, 0, 0, 0.9);
+        border-radius: 4px;
+        padding: 9px;  
+        width: 42px;
+        text-align: center;
+      }
+
+      .mini-submenu-left {
+        position: absolute;
+        top: 60px;
+        left: .5em;
+        z-index: 40;
+      }
+
+      #map { z-index: 35; }
+
+      .sidebar { z-index: 45; }
+
+      .main-row { position: relative; top: 0; }
+
+      .mini-submenu:hover{
+        cursor: pointer;
+      }
+
+      .slide-submenu{
+        background: rgba(0, 0, 0, 0.45);
+        display: inline-block;
+        padding: 0 8px;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+      /* Leyenda integrada en el mapa */
+      #legend {
+        background-color: rgba(255, 255, 255, 0.8);
+        padding: 10px;
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        border-radius: 5px;
+        z-index: 1000;
+        max-width: 200px;
+      }
+
+      .legend-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 5px;
+      }
+
+      .legend-color {
+        width: 20px;
+        height: 20px;
+        margin-right: 8px;
+        border: 1px solid #333;
+      }
+
+      /* Estilos para filtros y estadísticas */
+      #filters, #statistics {
+        padding: 10px;
+        margin: 10px 0;
+        background-color: #f8f9fa;
+        border-radius: 4px;
+      }
+
+      .filter-group {
+        margin-bottom: 10px;
+      }
+
+      .filter-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+      }
+
+      .filter-group select, .filter-group input {
+        width: 100%;
+        padding: 5px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+      }
+
+      .btn-kobo {
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        width: 100%;
+        margin-top: 10px;
+      }
+
+      .btn-kobo:hover {
+        background-color: #45a049;
+      }
+
+      .stat-item {
+        margin-bottom: 8px;
+        padding: 5px;
+        background-color: #e9ecef;
+        border-radius: 4px;
+      }
     </style>
-</head>
-<body>
-    <!-- Header -->
-    <div id="header">
-        <h1>WebGIS Marejadas</h1>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/ol@7.3.0/dist/ol.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+
+      function applyMargins() {
+        var leftToggler = $(".mini-submenu-left");
+        if (leftToggler.is(":visible")) {
+          $("#map .ol-zoom")
+            .css("margin-left", 0)
+            .removeClass("zoom-top-opened-sidebar")
+            .addClass("zoom-top-collapsed");
+        } else {
+          $("#map .ol-zoom")
+            .css("margin-left", $(".sidebar-left").width())
+            .removeClass("zoom-top-opened-sidebar")
+            .removeClass("zoom-top-collapsed");
+        }
+      }
+
+      function isConstrained() {
+        return $(".sidebar").width() == $(window).width();
+      }
+
+      function applyInitialUIState() {
+        if (isConstrained()) {
+          $(".sidebar-left .sidebar-body").fadeOut('slide');
+          $('.mini-submenu-left').fadeIn();
+        }
+      }
+
+      // Datos de ejemplo para el catastro
+      var sampleData = [
+        { id: 1, type: "inundacion_vereda", urgency: "Alto", lat: -36.820, lon: -73.044, description: "Inundación en vereda por marejada" },
+        { id: 2, type: "inundacion_calle", urgency: "Medio", lat: -36.822, lon: -73.048, description: "Calle inundada por desborde" },
+        { id: 3, type: "inundacion_vivienda", urgency: "Alto", lat: -36.818, lon: -73.042, description: "Vivienda afectada por inundación" },
+        { id: 4, type: "inundacion_vereda", urgency: "Bajo", lat: -36.825, lon: -73.050, description: "Inundación leve en vereda" }
+      ];
+
+      // Función para aplicar filtros
+      function applyFilters() {
+        var typeFilter = $('#filter-type').val();
+        var urgencyFilter = $('#filter-urgency').val();
+        
+        // Aquí implementarías la lógica para filtrar los datos en el mapa
+        console.log("Aplicando filtros:", typeFilter, urgencyFilter);
+        
+        // Actualizar estadísticas
+        updateStatistics();
+      }
+
+      // Función para actualizar estadísticas
+      function updateStatistics() {
+        // Datos de ejemplo para estadísticas
+        var totalReports = sampleData.length;
+        var highUrgency = sampleData.filter(item => item.urgency === "Alto").length;
+        var mediumUrgency = sampleData.filter(item => item.urgency === "Medio").length;
+        var lowUrgency = sampleData.filter(item => item.urgency === "Bajo").length;
+        
+        // Actualizar la interfaz
+        $('#total-reports').text(totalReports);
+        $('#high-urgency').text(highUrgency);
+        $('#medium-urgency').text(mediumUrgency);
+        $('#low-urgency').text(lowUrgency);
+      }
+
+      $(function(){
+        // Configuración del sidebar
+        $('.sidebar-left .slide-submenu').on('click',function() {
+          var thisEl = $(this);
+          thisEl.closest('.sidebar-body').fadeOut('slide',function(){
+            $('.mini-submenu-left').fadeIn();
+            applyMargins();
+          });
+        });
+
+        $('.mini-submenu-left').on('click',function() {
+          var thisEl = $(this);
+          $('.sidebar-left .sidebar-body').toggle('slide');
+          thisEl.hide();
+          applyMargins();
+        });
+
+        $(window).on("resize", applyMargins);
+
+        // Configuración del mapa
+        var map = new ol.Map({
+          target: "map",
+          layers: [
+            new ol.layer.Tile({
+              source: new ol.source.OSM()
+            })
+          ],
+          view: new ol.View({
+            center: ol.proj.fromLonLat([-73.044, -36.820]), // Concepción, Chile
+            zoom: 13
+          })
+        });
+
+        // Añadir capa de datos de ejemplo
+        var vectorSource = new ol.source.Vector();
+        
+        sampleData.forEach(function(item) {
+          var feature = new ol.Feature({
+            geometry: new ol.geom.Point(ol.proj.fromLonLat([item.lon, item.lat])),
+            type: item.type,
+            urgency: item.urgency,
+            description: item.description
+          });
+          
+          vectorSource.addFeature(feature);
+        });
+        
+        var vectorLayer = new ol.layer.Vector({
+          source: vectorSource,
+          style: function(feature) {
+            var urgency = feature.get('urgency');
+            var color;
+            
+            if (urgency === 'Alto') color = 'red';
+            else if (urgency === 'Medio') color = 'orange';
+            else color = 'yellow';
+            
+            return new ol.style.Style({
+              image: new ol.style.Circle({
+                radius: 8,
+                fill: new ol.style.Fill({color: color}),
+                stroke: new ol.style.Stroke({
+                  color: 'black',
+                  width: 1
+                })
+              })
+            });
+          }
+        });
+        
+        map.addLayer(vectorLayer);
+
+        // Configurar eventos de filtros
+        $('#filter-form').on('submit', function(e) {
+          e.preventDefault();
+          applyFilters();
+        });
+
+        // Configurar botón de formulario Kobo
+        $('#open-kobo-form').on('click', function() {
+          // Enlace al formulario Kobo (reemplazar con el enlace real)
+          window.open('https://ee.kobotoolbox.org/i/your-form-id', '_blank');
+        });
+
+        // Inicializar estadísticas
+        updateStatistics();
+        applyInitialUIState();
+        applyMargins();
+      });
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <nav class="navbar navbar-fixed-top navbar-default" role="navigation">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">WebGIS Catastro de Afectaciones por Desastres</a>
+          </div>
+          <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+              <li class="active"><a href="#">Inicio</a></li>
+              <li><a href="#">Acerca de</a></li>
+              <li><a href="#">Contacto</a></li>
+            </ul>
+            <form class="navbar-form navbar-left" role="search">
+              <div class="form-group">
+                <input type="text" class="form-control" placeholder="Buscar ubicación...">
+              </div>
+              <button type="submit" class="btn btn-default">Buscar</button>
+            </form>
+            </div>
+            </div>
+          </nav>
+        </div>
+      
+      <div class="navbar-offset"></div>
+      <div id="map">
+        <!-- Leyenda integrada en el mapa -->
+        <div id="legend">
+          <h4>Leyenda</h4>
+          <div class="legend-item">
+            <div class="legend-color" style="background-color: red;"></div>
+            <span>Alta Urgencia</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color" style="background-color: orange;"></div>
+            <span>Media Urgencia</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color" style="background-color: yellow;"></div>
+            <span>Baja Urgencia</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="row main-row">
+        <div class="col-sm-4 col-md-3 sidebar sidebar-left pull-left">
+          <div class="panel-group sidebar-body" id="accordion-left" style="display: block;">
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <h4 class="panel-title">
+                  <a data-toggle="collapse" href="#filters-panel">
+                    <i class="fa fa-filter"></i>
+                    Filtros
+                  </a>
+                  <span class="pull-right slide-submenu">
+                    <i class="fa fa-chevron-left"></i>
+                  </span>
+                </h4>
+              </div>
+              <div id="filters-panel" class="panel-collapse collapse in">
+                <div class="panel-body">
+                  <form id="filter-form">
+                    <div class="filter-group">
+                      <label for="filter-type">Tipo de Afectación:</label>
+                      <select id="filter-type">
+                        <option value="">Todos</option>
+                        <option value="inundacion_vereda">Inundación de Vereda</option>
+                        <option value="inundacion_calle">Inundación de Calle</option>
+                        <option value="inundacion_vivienda">Inundación de Vivienda</option>
+                      </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                      <label for="filter-urgency">Nivel de Urgencia:</label>
+                      <select id="filter-urgency">
+                        <option value="">Todos</option>
+                        <option value="Alto">Alto</option>
+                        <option value="Medio">Medio</option>
+                        <option value="Bajo">Bajo</option>
+                      </select>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-block">Aplicar Filtros</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+            
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <h4 class="panel-title">
+                  <a data-toggle="collapse" href="#statistics-panel">
+                    <i class="fa fa-bar-chart"></i>
+                    Estadísticas
+                  </a>
+                </h4>
+              </div>
+              <div id="statistics-panel" class="panel-collapse collapse in">
+                <div class="panel-body">
+                  <div class="stat-item">
+                    <strong>Total de Reportes:</strong> <span id="total-reports">0</span>
+                  </div>
+                  <div class="stat-item">
+                    <strong>Alta Urgencia:</strong> <span id="high-urgency">0</span>
+                  </div>
+                  <div class="stat-item">
+                    <strong>Media Urgencia:</strong> <span id="medium-urgency">0</span>
+                  </div>
+                  <div class="stat-item">
+                    <strong>Baja Urgencia:</strong> <span id="low-urgency">0</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <h4 class="panel-title">
+                  <a data-toggle="collapse" href="#kobo-panel">
+                    <i class="fa fa-plus-circle"></i>
+                    Realizar Reporte
+                  </a>
+                </h4>
+              </div>
+              <div id="kobo-panel" class="panel-collapse collapse in">
+                <div class="panel-body">
+                  <p>Para reportar una nueva afectación, haga clic en el siguiente botón:</p>
+                  <button id="open-kobo-form" class="btn-kobo">Abrir Formulario Kobo</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mini-submenu mini-submenu-left pull-left" style="display: none;">
+        <i class="fa fa-bars"></i>
+      </div>
     </div>
-
-    <!-- Filtros -->
-    <section id="filters">
-        <h2>Filtros</h2>
-        <form id="filter-form">
-            <label for="filter-type">Tipo de Afectación:</label>
-            <select id="filter-type">
-                <option value="">Todos</option>
-                <option value="inundacion_vereda">Inundación de Vereda</option>
-                <option value="inundacion_calle">Inundación de Calle</option>
-                <option value="inundacion_vivienda">Inundación de Vivienda</option>
-            </select>
-
-            <label for="filter-urgency">Nivel de Urgencia:</label>
-            <select id="filter-urgency">
-                <option value="">Todos</option>
-                <option value="Alto">Alto</option>
-                <option value="Medio">Medio</option>
-                <option value="Bajo">Bajo</option>
-            </select>
-
-            <button type="submit">Aplicar Filtros</button>
-        </form>
-    </section>
-
-    <!-- Mapa -->
-    <section id="map-section">
-    <div id="map"></div>
-    <div id="legend">
-        <h4>Leyenda</h4>
-        <div><span style="background-color: red; width: 15px; height: 15px; display: inline-block;"></span> Alto</div>
-        <div><span style="background-color: orange; width: 15px; height: 15px; display: inline-block;"></span> Medio</div>
-        <div><span style="background-color: yellow; width: 15px; height: 15px; display: inline-block;"></span> Bajo</div>
-    </div>
-    </section>
-
-
-    <!-- Estadísticas -->
-    <section id="statistics">
-        <h2>Estadísticas Generales</h2>
-        <p id="statistics-data">Cargando estadísticas...</p>
-    </section>
-
-    <!-- Kobo Form Link -->
-    <section id="kobo-form">
-    <h2>Realizar Reporte</h2>
-    <button id="open-kobo-form" style="padding: 10px 20px; background-color: #4CAF50; color: white; font-size: 16px; border: none; border-radius: 5px;">Abrir Formulario</button>
-    </section>
-
-
-    <!-- Scripts -->
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    <script src="js/mapa.js"></script>
 </body>
 </html>
