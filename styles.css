@@ -157,3 +157,14 @@ body { overflow: hidden; }
   z-index: 1000;
   text-align: center;
 }
+
+#current-location-btn {
+    background-color: #3498db;
+    border-color: #2980b9;
+    color: white;
+}
+
+#current-location-btn:hover {
+    background-color: #2980b9;
+    border-color: #2471a3;
+}
