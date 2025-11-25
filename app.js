@@ -161,26 +161,71 @@ function createPopupContent(feature) {
 
 // Función para aplicar filtros
 function applyFilters() {
-  var typeFilter = $('#filter-type').val();
-  var urgencyFilter = $('#filter-urgency').val();
-  
-  // Filtrar características
-  var filteredFeatures = vectorSource.getFeatures().filter(function(feature) {
-    var tipo = feature.get('tipo_afectacion');
-    var urgencia = feature.get('urgency');
+    var typeFilter = $('#filter-type').val();
+    var urgencyFilter = $('#filter-urgency').val();
     
-    var typeMatch = !typeFilter || tipo === typeFilter;
-    var urgencyMatch = !urgencyFilter || urgencia === urgencyFilter;
+    console.log("🔍 Aplicando filtros:", {
+        tipo: typeFilter,
+        urgencia: urgencyFilter
+    });
     
-    return typeMatch && urgencyMatch;
-  });
-  
-  // Actualizar la fuente con características filtradas
-  vectorSource.clear();
-  vectorSource.addFeatures(filteredFeatures);
-  
-  // Actualizar estadísticas
-  updateStatistics();
+    // Si ambos filtros están vacíos, mostrar todos los datos
+    if (!typeFilter && !urgencyFilter) {
+        console.log("🔄 Mostrando todos los datos (filtros vacíos)");
+        resetToAllData();
+        return;
+    }
+    
+    // Filtrar características
+    var filteredFeatures = vectorSource.getFeatures().filter(function(feature) {
+        var tipo = feature.get('tipo_afectacion');
+        var urgencia = feature.get('urgency');
+        
+        var typeMatch = !typeFilter || tipo === typeFilter;
+        var urgencyMatch = !urgencyFilter || urgencia === urgencyFilter;
+        
+        return typeMatch && urgencyMatch;
+    });
+    
+    console.log("📊 Resultados del filtro:", filteredFeatures.length, "de", vectorSource.getFeatures().length);
+    
+    // Actualizar la fuente con características filtradas
+    vectorSource.clear();
+    vectorSource.addFeatures(filteredFeatures);
+    
+    // Actualizar estadísticas
+    updateStatistics();
+}
+
+// Función para resetear a todos los datos
+function resetToAllData() {
+    console.log("🔄 Restableciendo todos los datos");
+    
+    // Limpiar la fuente actual
+    vectorSource.clear();
+    
+    // Volver a cargar todos los datos originales
+    geoJsonData.forEach(function(featureData) {
+        var coords = featureData.geometry.coordinates;
+        var props = featureData.properties;
+        
+        var feature = new ol.Feature({
+            geometry: new ol.geom.Point(ol.proj.fromLonLat([coords[0], coords[1]])),
+            tipo_afectacion: props.tipo_afectacion,
+            nivel_danio: props.nivel_danio,
+            altura_agua: props.altura_agua,
+            fecha_evento: props.fecha_evento,
+            comentarios: props.comentarios,
+            estado_validacion: props.estado_validacion,
+            foto_evento: props.foto_evento,
+            urgency: getUrgencyFromDamageLevel(props.nivel_danio)
+        });
+        
+        vectorSource.addFeature(feature);
+    });
+    
+    // Actualizar estadísticas
+    updateStatistics();
 }
 
 // Función para actualizar estadísticas
@@ -319,31 +364,14 @@ $(function(){
   });
 
   $('#reset-filters').on('click', function() {
+    console.log("Limpiando filtros");
+    
+    // Resetear los valores de los selects
     $('#filter-type').val('');
     $('#filter-urgency').val('');
+    
     // Recargar todos los datos
-    vectorSource.clear();
-    loadGeoJSONData().then(function(features) {
-      features.forEach(function(featureData) {
-        var coords = featureData.geometry.coordinates;
-        var props = featureData.properties;
-        
-        var feature = new ol.Feature({
-          geometry: new ol.geom.Point(ol.proj.fromLonLat([coords[0], coords[1]])),
-          tipo_afectacion: props.tipo_afectacion,
-          nivel_danio: props.nivel_danio,
-          altura_agua: props.altura_agua,
-          fecha_evento: props.fecha_evento,
-          comentarios: props.comentarios,
-          estado_validacion: props.estado_validacion,
-          foto_evento: props.foto_evento,
-          urgency: getUrgencyFromDamageLevel(props.nivel_danio)
-        });
-        
-        vectorSource.addFeature(feature);
-      });
-      updateStatistics();
-    });
+    resetToAllData();
         // Configurar búsqueda de ubicación
     $('#search-form').on('submit', function(e) {
         e.preventDefault();
