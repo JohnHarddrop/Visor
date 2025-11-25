@@ -32,34 +32,48 @@ function applyInitialUIState() {
 
 // Función para cargar datos GeoJSON
 function loadGeoJSONData() {
-  // Mostrar mensaje de carga
-  $('body').append('<div class="loading-message">Cargando datos de marejadas...</div>');
-  
-  return fetch('data/marejadas.geojson')
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Error al cargar el archivo GeoJSON. Código: ' + response.status);
-      }
-      return response.json();
-    })
-    .then(data => {
-      $('.loading-message').remove();
-      if (!data.features || data.features.length === 0) {
-        throw new Error('El archivo GeoJSON no contiene datos');
-      }
-      geoJsonData = data.features;
-      console.log('Datos GeoJSON cargados:', geoJsonData.length, 'registros');
-      return geoJsonData;
-    })
-    .catch(error => {
-      $('.loading-message').remove();
-      console.error('Error cargando GeoJSON:', error);
-      // Crear un mensaje de error más informativo
-      var errorMsg = 'Error al cargar los datos: ' + error.message + 
-                    '. Verifica que el archivo data/marejadas.geojson exista y tenga el formato correcto.';
-      alert(errorMsg);
-      return []; // Retorna array vacío en lugar de datos de ejemplo
-    });
+    console.log("🔄 Iniciando carga de GeoJSON...");
+    
+    // Mostrar mensaje de carga
+    $('body').append('<div class="loading-message">Cargando datos de marejadas...</div>');
+    
+    return fetch('data/marejadas.geojson')
+        .then(response => {
+            console.log("📡 Respuesta del servidor:", response.status, response.statusText);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log("✅ GeoJSON cargado exitosamente:", data);
+            $('.loading-message').remove();
+            
+            if (!data.features || data.features.length === 0) {
+                console.warn("⚠️ GeoJSON no contiene features");
+                throw new Error('El archivo GeoJSON no contiene datos');
+            }
+            
+            geoJsonData = data.features;
+            console.log(`📊 Datos procesados: ${geoJsonData.length} registros`);
+            return geoJsonData;
+        })
+        .catch(error => {
+            console.error("❌ Error cargando GeoJSON:", error);
+            $('.loading-message').remove();
+            
+            // Mensaje más detallado
+            var errorMsg = `Error al cargar los datos: ${error.message}\n\n` +
+                          `Verifica que:\n` +
+                          `• El archivo data/marejadas.geojson exista\n` +
+                          `• La ruta sea correcta\n` +
+                          `• El servidor permita acceso al archivo\n` +
+                          `• El formato del GeoJSON sea válido`;
+            
+            alert(errorMsg);
+            return [];
+        });
 }
 
 // Función para mapear nivel_danio a urgencia
