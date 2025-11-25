@@ -344,6 +344,26 @@ $(function(){
       });
       updateStatistics();
     });
+        // Configurar búsqueda de ubicación
+    $('#search-form').on('submit', function(e) {
+        e.preventDefault();
+        const query = $('#search-input').val().trim();
+        searchLocation(query);
+    });
+
+    // Botón para buscar ubicación actual
+    $('#current-location-btn').on('click', function() {
+        searchCurrentLocation();
+    });
+
+    // Autocompletar en la búsqueda (opcional)
+    $('#search-input').on('keypress', function(e) {
+        if (e.which === 13) { // Enter key
+            e.preventDefault();
+            const query = $(this).val().trim();
+            searchLocation(query);
+        }
+    });
   });
 
   // Configurar botón de formulario Kobo
@@ -354,3 +374,169 @@ $(function(){
   applyInitialUIState();
   applyMargins();
 });
+
+// Función para geocodificar una dirección usando Nominatim
+function searchLocation(query) {
+    console.log("🔍 Buscando:", query);
+    
+    if (!query || query.trim() === '') {
+        alert('Por favor ingresa una ubicación para buscar');
+        return;
+    }
+
+    // Mostrar loading
+    $('body').append('<div class="loading-message">Buscando ubicación...</div>');
+
+    // Usar Nominatim para geocodificación
+    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`;
+    
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            $('.loading-message').remove();
+            
+            if (data && data.length > 0) {
+                const result = data[0];
+                const lat = parseFloat(result.lat);
+                const lon = parseFloat(result.lon);
+                
+                console.log("📍 Resultado encontrado:", result.display_name, lat, lon);
+                
+                // Mover el mapa a la ubicación encontrada
+                map.getView().animate({
+                    center: ol.proj.fromLonLat([lon, lat]),
+                    zoom: 15,
+                    duration: 1000
+                });
+                
+                // Añadir un marcador temporal
+                addTemporaryMarker(lon, lat, result.display_name);
+                
+            } else {
+                alert('No se encontró la ubicación: ' + query);
+            }
+        })
+        .catch(error => {
+            $('.loading-message').remove();
+            console.error('Error en búsqueda:', error);
+            alert('Error al buscar la ubicación. Intenta nuevamente.');
+        });
+}
+
+// Función para añadir marcador temporal en la búsqueda
+function addTemporaryMarker(lon, lat, name) {
+    // Remover marcador anterior si existe
+    if (window.tempMarker) {
+        map.removeLayer(window.tempMarker);
+    }
+    
+    const markerSource = new ol.source.Vector();
+    const markerLayer = new ol.layer.Vector({
+        source: markerSource,
+        style: new ol.style.Style({
+            image: new ol.style.Circle({
+                radius: 10,
+                fill: new ol.style.Fill({color: '#3498db'}),
+                stroke: new ol.style.Stroke({
+                    color: '#2c3e50',
+                    width: 3
+                })
+            })
+        })
+    });
+    
+    const marker = new ol.Feature({
+        geometry: new ol.geom.Point(ol.proj.fromLonLat([lon, lat])),
+        name: name
+    });
+    
+    markerSource.addFeature(marker);
+    map.addLayer(markerLayer);
+    
+    // Guardar referencia para poder removerlo después
+    window.tempMarker = markerLayer;
+    
+    // Remover el marcador después de 5 segundos
+    setTimeout(() => {
+        if (window.tempMarker) {
+            map.removeLayer(window.tempMarker);
+            window.tempMarker = null;
+        }
+    }, 5000);
+    
+    // Crear popup para el marcador temporal
+    const overlay = new ol.Overlay({
+        element: document.createElement('div'),
+        positioning: 'bottom-center',
+        stopEvent: false
+    });
+    
+    overlay.getElement().innerHTML = `
+        <div class="popup-content" style="background: white; padding: 10px; border-radius: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+            <strong>📍 ${name}</strong>
+        </div>
+    `;
+    
+    map.addOverlay(overlay);
+    overlay.setPosition(ol.proj.fromLonLat([lon, lat]));
+    
+    // Remover el popup después de 3 segundos
+    setTimeout(() => {
+        map.removeOverlay(overlay);
+    }, 3000);
+}
+
+// Función para buscar usando la ubicación actual del usuario
+function searchCurrentLocation() {
+    if (!navigator.geolocation) {
+        alert('La geolocalización no es soportada por este navegador');
+        return;
+    }
+
+    $('body').append('<div class="loading-message">Obteniendo tu ubicación...</div>');
+
+    navigator.geolocation.getCurrentPosition(
+        function(position) {
+            $('.loading-message').remove();
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+            
+            console.log("📍 Ubicación actual:", lat, lon);
+            
+            // Mover el mapa a la ubicación actual
+            map.getView().animate({
+                center: ol.proj.fromLonLat([lon, lat]),
+                zoom: 15,
+                duration: 1000
+            });
+            
+            // Añadir marcador temporal
+            addTemporaryMarker(lon, lat, 'Tu ubicación actual');
+            
+        },
+        function(error) {
+            $('.loading-message').remove();
+            console.error('Error geolocalización:', error);
+            let message = 'Error al obtener la ubicación: ';
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    message += 'Permiso denegado';
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    message += 'Ubicación no disponible';
+                    break;
+                case error.TIMEOUT:
+                    message += 'Tiempo de espera agotado';
+                    break;
+                default:
+                    message += 'Error desconocido';
+            }
+            alert(message);
+        },
+        {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 60000
+        }
+    );
+}
