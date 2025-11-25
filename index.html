@@ -53,16 +53,17 @@
         cursor: pointer;
       }
 
-      /* Leyenda integrada en el mapa */
+      /* Leyenda integrada en el mapa - POSICIÓN CORREGIDA */
       #legend {
-        background-color: rgba(255, 255, 255, 0.8);
-        padding: 10px;
+        background-color: rgba(255, 255, 255, 0.9);
+        padding: 12px;
         position: absolute;
-        bottom: 10px;
+        bottom: 20px;
         right: 10px;
         border-radius: 5px;
         z-index: 1000;
-        max-width: 200px;
+        max-width: 220px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.3);
       }
 
       .legend-item {
@@ -120,15 +121,37 @@
 
       .stat-item {
         margin-bottom: 8px;
-        padding: 5px;
+        padding: 8px;
         background-color: #e9ecef;
         border-radius: 4px;
+        font-size: 14px;
+      }
+
+      .stat-value {
+        font-weight: bold;
+        color: #2c3e50;
+      }
+
+      .popup-content {
+        max-width: 300px;
+      }
+
+      .popup-image {
+        max-width: 100%;
+        height: auto;
+        margin: 5px 0;
       }
     </style>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/ol@7.3.0/dist/ol.js"></script>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <script type="text/javascript">
+
+      // Variables globales
+      var map;
+      var vectorSource;
+      var vectorLayer;
+      var geoJsonData = [];
 
       function applyMargins() {
         var leftToggler = $(".mini-submenu-left");
@@ -156,21 +179,123 @@
         }
       }
 
-      // Datos de ejemplo para el catastro
-      var sampleData = [
-        { id: 1, type: "inundacion_vereda", urgency: "Alto", lat: -36.820, lon: -73.044, description: "Inundación en vereda por marejada" },
-        { id: 2, type: "inundacion_calle", urgency: "Medio", lat: -36.822, lon: -73.048, description: "Calle inundada por desborde" },
-        { id: 3, type: "inundacion_vivienda", urgency: "Alto", lat: -36.818, lon: -73.042, description: "Vivienda afectada por inundación" },
-        { id: 4, type: "inundacion_vereda", urgency: "Bajo", lat: -36.825, lon: -73.050, description: "Inundación leve en vereda" }
-      ];
+      // Función para cargar datos GeoJSON
+      function loadGeoJSONData() {
+        return fetch('marejadas.geojson')
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Error al cargar el archivo GeoJSON');
+            }
+            return response.json();
+          })
+          .then(data => {
+            geoJsonData = data.features;
+            console.log('Datos GeoJSON cargados:', geoJsonData);
+            return geoJsonData;
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            alert('Error al cargar los datos. Usando datos de ejemplo.');
+            // Datos de ejemplo en caso de error
+            return [
+              {
+                type: "Feature",
+                geometry: {
+                  type: "Point",
+                  coordinates: [-71.626963, -33.038295]
+                },
+                properties: {
+                  fecha_evento: "2025-11-18",
+                  tipo_afectacion: "inundacion_vereda",
+                  nivel_danio: "1",
+                  altura_agua: "10",
+                  comentarios: "test2",
+                  estado_validacion: "pendiente"
+                }
+              }
+            ];
+          });
+      }
+
+      // Función para mapear nivel_danio a urgencia
+      function getUrgencyFromDamageLevel(nivelDanio) {
+        switch(nivelDanio) {
+          case "1": return "Bajo";
+          case "2": return "Medio";
+          case "3": return "Alto";
+          default: return "Bajo";
+        }
+      }
+
+      // Función para obtener color según urgencia
+      function getColorByUrgency(urgency) {
+        switch(urgency) {
+          case 'Alto': return '#e74c3c';
+          case 'Medio': return '#f39c12';
+          case 'Bajo': return '#f1c40f';
+          default: return '#95a5a6';
+        }
+      }
+
+      // Función para crear estilo de puntos
+      function createStyle(feature) {
+        var urgency = feature.get('urgency');
+        var color = getColorByUrgency(urgency);
+        
+        return new ol.style.Style({
+          image: new ol.style.Circle({
+            radius: 8,
+            fill: new ol.style.Fill({color: color}),
+            stroke: new ol.style.Stroke({
+              color: '#2c3e50',
+              width: 2
+            })
+          })
+        });
+      }
+
+      // Función para crear contenido del popup
+      function createPopupContent(feature) {
+        var props = feature.getProperties();
+        var content = `
+          <div class="popup-content">
+            <h5>Detalles del Reporte</h5>
+            <p><strong>Tipo:</strong> ${props.tipo_afectacion || 'No especificado'}</p>
+            <p><strong>Fecha:</strong> ${props.fecha_evento || 'No especificada'}</p>
+            <p><strong>Nivel de daño:</strong> ${props.nivel_danio || 'No especificado'}</p>
+            <p><strong>Altura agua:</strong> ${props.altura_agua || 'No especificado'} cm</p>
+            <p><strong>Urgencia:</strong> <span style="color: ${getColorByUrgency(props.urgency)}">${props.urgency}</span></p>
+            <p><strong>Comentarios:</strong> ${props.comentarios || 'Sin comentarios'}</p>
+            <p><strong>Estado:</strong> ${props.estado_validacion || 'No especificado'}</p>
+        `;
+        
+        if (props.foto_evento) {
+          content += `<p><strong>Foto:</strong> ${props.foto_evento}</p>`;
+        }
+        
+        content += `</div>`;
+        return content;
+      }
 
       // Función para aplicar filtros
       function applyFilters() {
         var typeFilter = $('#filter-type').val();
         var urgencyFilter = $('#filter-urgency').val();
         
-        // Aquí implementarías la lógica para filtrar los datos en el mapa
-        console.log("Aplicando filtros:", typeFilter, urgencyFilter);
+        // Filtrar características
+        var filteredFeatures = vectorSource.getFeatures().filter(function(feature) {
+          var tipo = feature.get('tipo_afectacion');
+          var urgencia = feature.get('urgency');
+          
+          var typeMatch = !typeFilter || tipo === typeFilter;
+          var urgencyMatch = !urgencyFilter || urgencia === urgencyFilter;
+          
+          return typeMatch && urgencyMatch;
+        });
+        
+        // Actualizar la fuente con características filtradas
+        vectorSource.clear();
+        vectorSource.addFeatures(filteredFeatures);
         
         // Actualizar estadísticas
         updateStatistics();
@@ -178,20 +303,104 @@
 
       // Función para actualizar estadísticas
       function updateStatistics() {
-        // Datos de ejemplo para estadísticas
-        var totalReports = sampleData.length;
-        var highUrgency = sampleData.filter(item => item.urgency === "Alto").length;
-        var mediumUrgency = sampleData.filter(item => item.urgency === "Medio").length;
-        var lowUrgency = sampleData.filter(item => item.urgency === "Bajo").length;
+        var features = vectorSource.getFeatures();
+        var totalReports = features.length;
+        
+        var highUrgency = features.filter(f => f.get('urgency') === "Alto").length;
+        var mediumUrgency = features.filter(f => f.get('urgency') === "Medio").length;
+        var lowUrgency = features.filter(f => f.get('urgency') === "Bajo").length;
+        
+        var inundacionVereda = features.filter(f => f.get('tipo_afectacion') === "inundacion_vereda").length;
+        var inundacionCalle = features.filter(f => f.get('tipo_afectacion') === "inundacion_calle").length;
+        var inundacionVivienda = features.filter(f => f.get('tipo_afectacion') === "inundacion_vivienda").length;
         
         // Actualizar la interfaz
         $('#total-reports').text(totalReports);
         $('#high-urgency').text(highUrgency);
         $('#medium-urgency').text(mediumUrgency);
         $('#low-urgency').text(lowUrgency);
+        $('#inundacion-vereda').text(inundacionVereda);
+        $('#inundacion-calle').text(inundacionCalle);
+        $('#inundacion-vivienda').text(inundacionVivienda);
+      }
+
+      // Función para inicializar el mapa con datos GeoJSON
+      function initializeMapWithData(features) {
+        // Configuración del mapa
+        map = new ol.Map({
+          target: "map",
+          layers: [
+            new ol.layer.Tile({
+              source: new ol.source.OSM()
+            })
+          ],
+          view: new ol.View({
+            center: ol.proj.fromLonLat([-71.626963, -33.038295]), // Centrado en tu dato
+            zoom: 15
+          })
+        });
+
+        // Crear fuente vectorial y capa
+        vectorSource = new ol.source.Vector();
+        vectorLayer = new ol.layer.Vector({
+          source: vectorSource,
+          style: createStyle
+        });
+        
+        map.addLayer(vectorLayer);
+
+        // Convertir características GeoJSON a características OpenLayers
+        features.forEach(function(featureData) {
+          var coords = featureData.geometry.coordinates;
+          var props = featureData.properties;
+          
+          var feature = new ol.Feature({
+            geometry: new ol.geom.Point(ol.proj.fromLonLat([coords[0], coords[1]])),
+            tipo_afectacion: props.tipo_afectacion,
+            nivel_danio: props.nivel_danio,
+            altura_agua: props.altura_agua,
+            fecha_evento: props.fecha_evento,
+            comentarios: props.comentarios,
+            estado_validacion: props.estado_validacion,
+            foto_evento: props.foto_evento,
+            urgency: getUrgencyFromDamageLevel(props.nivel_danio)
+          });
+          
+          vectorSource.addFeature(feature);
+        });
+
+        // Agregar interacción para popups
+        var overlay = new ol.Overlay({
+          element: document.createElement('div'),
+          positioning: 'bottom-center',
+          stopEvent: false
+        });
+        map.addOverlay(overlay);
+
+        map.on('click', function(evt) {
+          var feature = map.forEachFeatureAtPixel(evt.pixel, function(feature) {
+            return feature;
+          });
+          
+          if (feature) {
+            var content = createPopupContent(feature);
+            overlay.getElement().innerHTML = content;
+            overlay.setPosition(evt.coordinate);
+          } else {
+            overlay.setPosition(undefined);
+          }
+        });
+
+        // Actualizar estadísticas iniciales
+        updateStatistics();
       }
 
       $(function(){
+        // Cargar datos GeoJSON primero
+        loadGeoJSONData().then(function(features) {
+          initializeMapWithData(features);
+        });
+
         // Configuración del sidebar
         $('.sidebar-left .slide-submenu').on('click',function() {
           var thisEl = $(this);
@@ -210,73 +419,45 @@
 
         $(window).on("resize", applyMargins);
 
-        // Configuración del mapa
-        var map = new ol.Map({
-          target: "map",
-          layers: [
-            new ol.layer.Tile({
-              source: new ol.source.OSM()
-            })
-          ],
-          view: new ol.View({
-            center: ol.proj.fromLonLat([-73.044, -36.820]), // Concepción, Chile
-            zoom: 13
-          })
-        });
-
-        // Añadir capa de datos de ejemplo
-        var vectorSource = new ol.source.Vector();
-        
-        sampleData.forEach(function(item) {
-          var feature = new ol.Feature({
-            geometry: new ol.geom.Point(ol.proj.fromLonLat([item.lon, item.lat])),
-            type: item.type,
-            urgency: item.urgency,
-            description: item.description
-          });
-          
-          vectorSource.addFeature(feature);
-        });
-        
-        var vectorLayer = new ol.layer.Vector({
-          source: vectorSource,
-          style: function(feature) {
-            var urgency = feature.get('urgency');
-            var color;
-            
-            if (urgency === 'Alto') color = 'red';
-            else if (urgency === 'Medio') color = 'orange';
-            else color = 'yellow';
-            
-            return new ol.style.Style({
-              image: new ol.style.Circle({
-                radius: 8,
-                fill: new ol.style.Fill({color: color}),
-                stroke: new ol.style.Stroke({
-                  color: 'black',
-                  width: 1
-                })
-              })
-            });
-          }
-        });
-        
-        map.addLayer(vectorLayer);
-
         // Configurar eventos de filtros
         $('#filter-form').on('submit', function(e) {
           e.preventDefault();
           applyFilters();
         });
 
+        $('#reset-filters').on('click', function() {
+          $('#filter-type').val('');
+          $('#filter-urgency').val('');
+          // Recargar todos los datos
+          vectorSource.clear();
+          loadGeoJSONData().then(function(features) {
+            features.forEach(function(featureData) {
+              var coords = featureData.geometry.coordinates;
+              var props = featureData.properties;
+              
+              var feature = new ol.Feature({
+                geometry: new ol.geom.Point(ol.proj.fromLonLat([coords[0], coords[1]])),
+                tipo_afectacion: props.tipo_afectacion,
+                nivel_danio: props.nivel_danio,
+                altura_agua: props.altura_agua,
+                fecha_evento: props.fecha_evento,
+                comentarios: props.comentarios,
+                estado_validacion: props.estado_validacion,
+                foto_evento: props.foto_evento,
+                urgency: getUrgencyFromDamageLevel(props.nivel_danio)
+              });
+              
+              vectorSource.addFeature(feature);
+            });
+            updateStatistics();
+          });
+        });
+
         // Configurar botón de formulario Kobo
         $('#open-kobo-form').on('click', function() {
-          // Enlace al formulario Kobo (reemplazar con el enlace real)
           window.open('https://ee.kobotoolbox.org/i/your-form-id', '_blank');
         });
 
-        // Inicializar estadísticas
-        updateStatistics();
         applyInitialUIState();
         applyMargins();
       });
@@ -293,7 +474,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#">WebGIS Catastro de Afectaciones por Desastres</a>
+            <a class="navbar-brand" href="#">WebGIS - Catastro de Marejadas</a>
           </div>
           <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
@@ -316,18 +497,18 @@
       <div id="map">
         <!-- Leyenda integrada en el mapa -->
         <div id="legend">
-          <h4>Leyenda</h4>
+          <h4>Leyenda - Nivel de Urgencia</h4>
           <div class="legend-item">
-            <div class="legend-color" style="background-color: red;"></div>
-            <span>Alta Urgencia</span>
+            <div class="legend-color" style="background-color: #e74c3c;"></div>
+            <span>Alta Urgencia (Nivel 3)</span>
           </div>
           <div class="legend-item">
-            <div class="legend-color" style="background-color: orange;"></div>
-            <span>Media Urgencia</span>
+            <div class="legend-color" style="background-color: #f39c12;"></div>
+            <span>Media Urgencia (Nivel 2)</span>
           </div>
           <div class="legend-item">
-            <div class="legend-color" style="background-color: yellow;"></div>
-            <span>Baja Urgencia</span>
+            <div class="legend-color" style="background-color: #f1c40f;"></div>
+            <span>Baja Urgencia (Nivel 1)</span>
           </div>
         </div>
       </div>
@@ -371,6 +552,9 @@
                     </div>
                     
                     <button type="submit" class="btn btn-primary btn-block">Aplicar Filtros</button>
+                    <button type="button" id="reset-filters" class="btn btn-default btn-block" style="margin-top: 5px;">
+                      Limpiar Filtros
+                    </button>
                   </form>
                 </div>
               </div>
@@ -388,16 +572,26 @@
               <div id="statistics-panel" class="panel-collapse collapse in">
                 <div class="panel-body">
                   <div class="stat-item">
-                    <strong>Total de Reportes:</strong> <span id="total-reports">0</span>
+                    <strong>Total de Reportes:</strong> <span id="total-reports" class="stat-value">0</span>
                   </div>
                   <div class="stat-item">
-                    <strong>Alta Urgencia:</strong> <span id="high-urgency">0</span>
+                    <strong>Alta Urgencia:</strong> <span id="high-urgency" class="stat-value">0</span>
                   </div>
                   <div class="stat-item">
-                    <strong>Media Urgencia:</strong> <span id="medium-urgency">0</span>
+                    <strong>Media Urgencia:</strong> <span id="medium-urgency" class="stat-value">0</span>
                   </div>
                   <div class="stat-item">
-                    <strong>Baja Urgencia:</strong> <span id="low-urgency">0</span>
+                    <strong>Baja Urgencia:</strong> <span id="low-urgency" class="stat-value">0</span>
+                  </div>
+                  <hr>
+                  <div class="stat-item">
+                    <strong>Inund. Vereda:</strong> <span id="inundacion-vereda" class="stat-value">0</span>
+                  </div>
+                  <div class="stat-item">
+                    <strong>Inund. Calle:</strong> <span id="inundacion-calle" class="stat-value">0</span>
+                  </div>
+                  <div class="stat-item">
+                    <strong>Inund. Vivienda:</strong> <span id="inundacion-vivienda" class="stat-value">0</span>
                   </div>
                 </div>
               </div>
@@ -414,8 +608,11 @@
               </div>
               <div id="kobo-panel" class="panel-collapse collapse in">
                 <div class="panel-body">
-                  <p>Para reportar una nueva afectación, haga clic en el siguiente botón:</p>
+                  <p>Para reportar una nueva afectación por marejadas:</p>
                   <button id="open-kobo-form" class="btn-kobo">Abrir Formulario Kobo</button>
+                  <p style="font-size: 12px; margin-top: 10px; color: #666;">
+                    El formulario se abrirá en una nueva ventana/tab.
+                  </p>
                 </div>
               </div>
             </div>
