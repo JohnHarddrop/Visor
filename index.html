@@ -141,6 +141,18 @@
         height: auto;
         margin: 5px 0;
       }
+
+      .loading-message {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: rgba(255, 255, 255, 0.9);
+        padding: 20px;
+        border-radius: 5px;
+        z-index: 1000;
+        text-align: center;
+      }
     </style>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/ol@7.3.0/dist/ol.js"></script>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -181,39 +193,33 @@
 
       // Función para cargar datos GeoJSON
       function loadGeoJSONData() {
-        return fetch('marejadas.geojson')
+        // Mostrar mensaje de carga
+        $('body').append('<div class="loading-message">Cargando datos de marejadas...</div>');
+        
+        return fetch('data/marejadas.geojson')
           .then(response => {
             if (!response.ok) {
-              throw new Error('Error al cargar el archivo GeoJSON');
+              throw new Error('Error al cargar el archivo GeoJSON. Código: ' + response.status);
             }
             return response.json();
           })
           .then(data => {
+            $('.loading-message').remove();
+            if (!data.features || data.features.length === 0) {
+              throw new Error('El archivo GeoJSON no contiene datos');
+            }
             geoJsonData = data.features;
-            console.log('Datos GeoJSON cargados:', geoJsonData);
+            console.log('Datos GeoJSON cargados:', geoJsonData.length, 'registros');
             return geoJsonData;
           })
           .catch(error => {
-            console.error('Error:', error);
-            alert('Error al cargar los datos. Usando datos de ejemplo.');
-            // Datos de ejemplo en caso de error
-            return [
-              {
-                type: "Feature",
-                geometry: {
-                  type: "Point",
-                  coordinates: [-71.626963, -33.038295]
-                },
-                properties: {
-                  fecha_evento: "2025-11-18",
-                  tipo_afectacion: "inundacion_vereda",
-                  nivel_danio: "1",
-                  altura_agua: "10",
-                  comentarios: "test2",
-                  estado_validacion: "pendiente"
-                }
-              }
-            ];
+            $('.loading-message').remove();
+            console.error('Error cargando GeoJSON:', error);
+            // Crear un mensaje de error más informativo
+            var errorMsg = 'Error al cargar los datos: ' + error.message + 
+                          '. Verifica que el archivo data/marejadas.geojson exista y tenga el formato correcto.';
+            alert(errorMsg);
+            return []; // Retorna array vacío en lugar de datos de ejemplo
           });
       }
 
@@ -326,6 +332,10 @@
 
       // Función para inicializar el mapa con datos GeoJSON
       function initializeMapWithData(features) {
+        if (features.length === 0) {
+          alert('No hay datos para mostrar. El mapa se inicializará vacío.');
+        }
+
         // Configuración del mapa
         map = new ol.Map({
           target: "map",
@@ -455,7 +465,7 @@
 
         // Configurar botón de formulario Kobo
         $('#open-kobo-form').on('click', function() {
-          window.open('https://ee.kobotoolbox.org/x/WpH0FcYu', '_blank');
+          window.open('https://ee.kobotoolbox.org/x/WpH0FcYu');
         });
 
         applyInitialUIState();
