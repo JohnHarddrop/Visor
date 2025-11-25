@@ -114,26 +114,49 @@ function createStyle(feature) {
 }
 
 // Función para crear contenido del popup
+// Función para crear contenido del popup
 function createPopupContent(feature) {
-  var props = feature.getProperties();
-  var content = `
-    <div class="popup-content">
-      <h5>Detalles del Reporte</h5>
-      <p><strong>Tipo:</strong> ${props.tipo_afectacion || 'No especificado'}</p>
-      <p><strong>Fecha:</strong> ${props.fecha_evento || 'No especificada'}</p>
-      <p><strong>Nivel de daño:</strong> ${props.nivel_danio || 'No especificado'}</p>
-      <p><strong>Altura agua:</strong> ${props.altura_agua || 'No especificado'} cm</p>
-      <p><strong>Urgencia:</strong> <span style="color: ${getColorByUrgency(props.urgency)}">${props.urgency}</span></p>
-      <p><strong>Comentarios:</strong> ${props.comentarios || 'Sin comentarios'}</p>
-      <p><strong>Estado:</strong> ${props.estado_validacion || 'No especificado'}</p>
-  `;
-  
-  if (props.foto_evento) {
-    content += `<p><strong>Foto:</strong> ${props.foto_evento}</p>`;
-  }
-  
-  content += `</div>`;
-  return content;
+    var props = feature.getProperties();
+    
+    // Mapear tipos de afectación a nombres legibles
+    var tipoMap = {
+        'inundacion_vereda': 'Inundación de vereda',
+        'inundacion_calle': 'Inundación de calle', 
+        'inundacion_vivienda': 'Inundación de viviendas/comercio',
+        'danos_infraestructura': 'Daño a infraestructura costera',
+        'erosion': 'Erosión o socavón',
+        'otro': 'Otro'
+    };
+    
+    var tipoDisplay = tipoMap[props.tipo_afectacion] || props.tipo_afectacion || 'No especificado';
+    
+    var content = `
+        <div class="popup-content" style="background: white; padding: 15px; border-radius: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); max-width: 300px; font-family: Arial, sans-serif;">
+            <h5 style="margin-top: 0; color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 8px;">Detalles del Reporte</h5>
+            <div style="display: grid; grid-template-columns: 1fr; gap: 8px;">
+                <div><strong>📍 Tipo:</strong> ${tipoDisplay}</div>
+                <div><strong>📅 Fecha:</strong> ${props.fecha_evento || 'No especificada'}</div>
+                <div><strong>⚠️ Nivel de daño:</strong> ${props.nivel_danio || 'No especificado'}</div>
+                <div><strong>🌊 Altura agua:</strong> ${props.altura_agua ? props.altura_agua + ' cm' : 'No medido'}</div>
+                <div><strong>🚨 Urgencia:</strong> <span style="color: ${getColorByUrgency(props.urgency)}; font-weight: bold;">${props.urgency}</span></div>
+                <div><strong>💬 Comentarios:</strong> ${props.comentarios || 'Sin comentarios'}</div>
+                <div><strong>📋 Estado:</strong> ${props.estado_validacion || 'Pendiente'}</div>
+            </div>
+    `;
+    
+    // Imágenes (a futuro):
+    if (props.foto_evento && props.foto_evento !== "No especificado") {
+        content += `
+            <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #eee;">
+                <strong>📸 Foto:</strong><br>
+                <div style="color: #7f8c8d; font-style: italic;">Imagen disponible en Kobo</div>
+            </div>
+        `;
+    }
+    
+    content += `</div>`;
+    return content;
+
 }
 
 // Función para aplicar filtros
@@ -162,25 +185,32 @@ function applyFilters() {
 
 // Función para actualizar estadísticas
 function updateStatistics() {
-  var features = vectorSource.getFeatures();
-  var totalReports = features.length;
-  
-  var highUrgency = features.filter(f => f.get('urgency') === "Alto").length;
-  var mediumUrgency = features.filter(f => f.get('urgency') === "Medio").length;
-  var lowUrgency = features.filter(f => f.get('urgency') === "Bajo").length;
-  
-  var inundacionVereda = features.filter(f => f.get('tipo_afectacion') === "inundacion_vereda").length;
-  var inundacionCalle = features.filter(f => f.get('tipo_afectacion') === "inundacion_calle").length;
-  var inundacionVivienda = features.filter(f => f.get('tipo_afectacion') === "inundacion_vivienda").length;
-  
-  // Actualizar la interfaz
-  $('#total-reports').text(totalReports);
-  $('#high-urgency').text(highUrgency);
-  $('#medium-urgency').text(mediumUrgency);
-  $('#low-urgency').text(lowUrgency);
-  $('#inundacion-vereda').text(inundacionVereda);
-  $('#inundacion-calle').text(inundacionCalle);
-  $('#inundacion-vivienda').text(inundacionVivienda);
+    var features = vectorSource.getFeatures();
+    var totalReports = features.length;
+    
+    var highUrgency = features.filter(f => f.get('urgency') === "Alto").length;
+    var mediumUrgency = features.filter(f => f.get('urgency') === "Medio").length;
+    var lowUrgency = features.filter(f => f.get('urgency') === "Bajo").length;
+    
+    // Contar por tipo de afectación
+    var inundacionVereda = features.filter(f => f.get('tipo_afectacion') === "inundacion_vereda").length;
+    var inundacionCalle = features.filter(f => f.get('tipo_afectacion') === "inundacion_calle").length;
+    var inundacionVivienda = features.filter(f => f.get('tipo_afectacion') === "inundacion_vivienda").length;
+    var danosInfraestructura = features.filter(f => f.get('tipo_afectacion') === "danos_infraestructura").length;
+    var erosion = features.filter(f => f.get('tipo_afectacion') === "erosion").length;
+    var otro = features.filter(f => f.get('tipo_afectacion') === "otro").length;
+    
+    // Actualizar la interfaz
+    $('#total-reports').text(totalReports);
+    $('#high-urgency').text(highUrgency);
+    $('#medium-urgency').text(mediumUrgency);
+    $('#low-urgency').text(lowUrgency);
+    $('#inundacion-vereda').text(inundacionVereda);
+    $('#inundacion-calle').text(inundacionCalle);
+    $('#inundacion-vivienda').text(inundacionVivienda);
+    $('#danos-infraestructura').text(danosInfraestructura);
+    $('#erosion').text(erosion);
+    $('#otro').text(otro);
 }
 
 // Función para inicializar el mapa con datos GeoJSON
