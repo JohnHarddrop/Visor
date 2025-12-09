@@ -480,18 +480,18 @@ function calculateStatistics() {
             M5: features.filter(f => f.get('categoria_marejada') === "M5").length
         },
         
-        // Por tipo de lugar
+        // Por tipo de lugar - VALORES CORREGIDOS
         lugar: {
             vereda: features.filter(f => f.get('tipo_lugar') === "vereda").length,
-            calzada_calle: features.filter(f => f.get('tipo_lugar') === "calzada_calle").length,
+            calzada: features.filter(f => f.get('tipo_lugar') === "calzada").length,
             interior_vivienda: features.filter(f => f.get('tipo_lugar') === "interior_vivienda").length,
             interior_comercio: features.filter(f => f.get('tipo_lugar') === "interior_comercio").length,
             espacio_publico: features.filter(f => f.get('tipo_lugar') === "espacio_publico").length,
-            infraestructura: features.filter(f => f.get('tipo_lugar') === "infraestructura").length,
-            playa: features.filter(f => f.get('tipo_lugar') === "playa").length
+            infraestructura_critica: features.filter(f => f.get('tipo_lugar') === "infraestructura_critica").length,
+            playa_roquerios: features.filter(f => f.get('tipo_lugar') === "playa_roquerios").length
         },
         
-        // Por afectación principal
+        // Por afectación principal - VALORES CORREGIDOS (basados en tu formulario)
         afectacion: {
             inundacion_vereda: features.filter(f => f.get('tipo_afectacion_principal') === "inundacion_vereda").length,
             inundacion_calle: features.filter(f => f.get('tipo_afectacion_principal') === "inundacion_calle").length,
@@ -510,33 +510,44 @@ function calculateStatistics() {
 function updateStatistics() {
     var stats = calculateStatistics();
     
-    // Actualizar estadísticas básicas
+    // Actualizar total siempre visible
     $('#total-reports').text(stats.total);
+    
+    // Nivel de daño
     $('#damage-mild').text(stats.danio.leve);
     $('#damage-moderate').text(stats.danio.moderado);
     $('#damage-severe').text(stats.danio.severo);
     
-    // Actualizar estadísticas de marejada
-    $('#wave-mild').text(stats.marejada.N + stats.marejada.N_plus);
-    $('#wave-moderate').text(stats.marejada.M1 + stats.marejada.M2);
-    $('#wave-severe').text(stats.marejada.M3 + stats.marejada.M4 + stats.marejada.M5);
+    // Categorías de marejada (desagregadas)
+    $('#wave-n').text(stats.marejada.N);
+    $('#wave-n-plus').text(stats.marejada.N_plus);
+    $('#wave-m1').text(stats.marejada.M1);
+    $('#wave-m2').text(stats.marejada.M2);
+    $('#wave-m3').text(stats.marejada.M3);
+    $('#wave-m4').text(stats.marejada.M4);
+    $('#wave-m5').text(stats.marejada.M5);
     
-    // Actualizar estadísticas de afectación
+    // Tipos de afectación
     $('#affectation-street').text(stats.afectacion.inundacion_calle);
     $('#affectation-house').text(stats.afectacion.inundacion_vivienda);
+    $('#affectation-sidewalk').text(stats.afectacion.inundacion_vereda);
+    $('#affectation-commerce').text(stats.afectacion.inundacion_comercio);
     $('#affectation-infra').text(stats.afectacion.danio_infraestructura);
     $('#affectation-erosion').text(stats.afectacion.erosion);
+    $('#affectation-drag').text(stats.afectacion.arrastre);
+    $('#affectation-splash').text(stats.afectacion.salpicaduras);
     
-    // Actualizar estadísticas de lugar
+    // Tipo de lugar - NOMBRES CORREGIDOS
     $('#tipo-vereda').text(stats.lugar.vereda);
-    $('#tipo-calzada').text(stats.lugar.calzada_calle);
+    $('#tipo-calzada').text(stats.lugar.calzada);
     $('#tipo-vivienda').text(stats.lugar.interior_vivienda);
-    $('#tipo-playa').text(stats.lugar.playa);
-    $('#tipo-infraestructura').text(stats.lugar.infraestructura);
-    $('#tipo-otro').text(
-        stats.lugar.interior_comercio + 
-        stats.lugar.espacio_publico
-    );
+    $('#tipo-comercio').text(stats.lugar.interior_comercio);
+    $('#tipo-espacio-publico').text(stats.lugar.espacio_publico);
+    $('#tipo-infraestructura').text(stats.lugar.infraestructura_critica);
+    $('#tipo-playa').text(stats.lugar.playa_roquerios);
+    
+    // Actualizar gráfico
+    updateChart();
 }
 
 // ============================================
@@ -1314,12 +1325,12 @@ function getChartData(chartType, stats) {
                 labels: ['Vereda', 'Calzada', 'Vivienda', 'Comercio', 'Esp. Público', 'Infraestructura', 'Playa'],
                 values: [
                     stats.lugar.vereda,
-                    stats.lugar.calzada_calle,
+                    stats.lugar.calzada, // CORREGIDO: calzada en lugar de calzada_calle
                     stats.lugar.interior_vivienda,
                     stats.lugar.interior_comercio,
                     stats.lugar.espacio_publico,
-                    stats.lugar.infraestructura,
-                    stats.lugar.playa
+                    stats.lugar.infraestructura_critica, // CORREGIDO
+                    stats.lugar.playa_roquerios // CORREGIDO
                 ],
                 colors: ['#3498db', '#9b59b6', '#e67e22', '#1abc9c', '#d35400', '#c0392b', '#16a085'],
                 total: Object.values(stats.lugar).reduce((a, b) => a + b, 0)
@@ -1495,6 +1506,199 @@ $(function(){
 
     // Asegurar que dropdowns de Bootstrap funcionen
     $('.dropdown-toggle').dropdown();
+
+    applyMargins();
+    
+    // Asegurar que el botón de sidebar sea visible
+    $('.sidebar-toggle-btn').show();
+    
+    // Inicializar leyenda en daño por defecto
+    setTimeout(function() {
+        changeLegend('damage');
+    }, 1000);
+});
+// ============================================
+// FUNCIONES PARA CONTROLAR TAMAÑO DE SIDEBAR
+// ============================================
+
+var isResizing = false;
+var lastDownX = 0;
+var sidebarDefaultWidth = 350;
+
+function initializeSidebarResize() {
+    var sidebar = $('.sidebar-left');
+    var resizeHandle = sidebar[0];
+    
+    // Crear controles de tamaño si no existen
+    if (!$('.sidebar-size-controls').length) {
+        sidebar.append(`
+            <div class="sidebar-size-controls">
+                <button class="size-control-btn" data-size="small" title="Pequeño (300px)">
+                    <i class="fa fa-compress"></i>
+                </button>
+                <button class="size-control-btn active" data-size="medium" title="Mediano (400px)">
+                    <i class="fa fa-square-o"></i>
+                </button>
+                <button class="size-control-btn" data-size="large" title="Grande (500px)">
+                    <i class="fa fa-expand"></i>
+                </button>
+                <button class="size-control-btn" data-size="extra-large" title="Extra Grande (600px)">
+                    <i class="fa fa-arrows-alt"></i>
+                </button>
+            </div>
+            <div class="sidebar-width-indicator">${sidebar.width()}px</div>
+        `);
+    }
+    
+    // Evento para redimensionamiento con mouse
+    $(document).on('mousedown', '.sidebar-left::after', function(e) {
+        isResizing = true;
+        lastDownX = e.clientX;
+        sidebar.addClass('resizing');
+        $('body').addClass('resizing-sidebar');
+        e.preventDefault();
+    });
+    
+    $(document).on('mousemove', function(e) {
+        if (!isResizing) return;
+        
+        var offsetRight = document.body.offsetWidth - (e.clientX - document.body.offsetLeft);
+        var newWidth = e.clientX - sidebar.offset().left;
+        
+        // Limitar tamaño mínimo y máximo
+        newWidth = Math.max(300, Math.min(600, newWidth));
+        
+        sidebar.css('width', newWidth + 'px');
+        applyMargins();
+        
+        // Actualizar indicador
+        $('.sidebar-width-indicator').text(newWidth + 'px');
+        
+        e.preventDefault();
+    });
+    
+    $(document).on('mouseup', function() {
+        if (isResizing) {
+            isResizing = false;
+            sidebar.removeClass('resizing');
+            $('body').removeClass('resizing-sidebar');
+        }
+    });
+    
+    // Controles de tamaño predefinidos
+    $(document).on('click', '.size-control-btn', function() {
+        var size = $(this).data('size');
+        changeSidebarSize(size);
+    });
+    
+    // Botón para modo compacto
+    $(document).on('dblclick', '.sidebar-toggle-btn', function() {
+        toggleCompactMode();
+    });
+}
+
+function changeSidebarSize(size) {
+    var sidebar = $('.sidebar-left');
+    
+    // Remover todas las clases de tamaño
+    sidebar.removeClass('size-small size-medium size-large size-extra-large');
+    
+    // Aplicar nuevo tamaño
+    switch(size) {
+        case 'small':
+            sidebar.addClass('size-small').css('width', '300px');
+            break;
+        case 'medium':
+            sidebar.addClass('size-medium').css('width', '400px');
+            break;
+        case 'large':
+            sidebar.addClass('size-large').css('width', '500px');
+            break;
+        case 'extra-large':
+            sidebar.addClass('size-extra-large').css('width', '600px');
+            break;
+    }
+    
+    // Actualizar botones activos
+    $('.size-control-btn').removeClass('active');
+    $(`.size-control-btn[data-size="${size}"]`).addClass('active');
+    
+    // Ajustar márgenes
+    applyMargins();
+    
+    // Actualizar posición del botón toggle
+    updateToggleButtonPosition();
+}
+
+function toggleCompactMode() {
+    var sidebar = $('.sidebar-left');
+    sidebar.toggleClass('compact-mode');
+    
+    if (sidebar.hasClass('compact-mode')) {
+        // Guardar el tamaño actual antes de compactar
+        sidebar.data('previous-width', sidebar.width());
+        sidebar.css('width', '50px');
+    } else {
+        // Restaurar tamaño anterior
+        var previousWidth = sidebar.data('previous-width') || sidebarDefaultWidth;
+        sidebar.css('width', previousWidth + 'px');
+    }
+    
+    applyMargins();
+    updateToggleButtonPosition();
+}
+
+function updateToggleButtonPosition() {
+    var sidebar = $('.sidebar-left');
+    var toggleBtn = $('.sidebar-toggle-btn');
+    
+    if (sidebar.hasClass('collapsed') || sidebar.hasClass('compact-mode')) {
+        toggleBtn.css('left', '10px');
+    } else {
+        var sidebarWidth = sidebar.width();
+        toggleBtn.css('left', 'calc(' + sidebarWidth + 'px - 42px - 10px)');
+    }
+}
+
+function togglePanelExpand(panelId) {
+    var panel = $('#' + panelId);
+    panel.toggleClass('collapsed');
+    
+    // Ajustar altura del panel body
+    if (panel.hasClass('collapsed')) {
+        panel.find('.panel-body').css('max-height', '0');
+    } else {
+        panel.find('.panel-body').css('max-height', '500px');
+    }
+}
+
+// ============================================
+// INICIALIZACIÓN ACTUALIZADA
+// ============================================
+
+$(function(){
+    // Inicializar tamaño de pantalla
+    checkScreenSize();
+    
+    // Inicializar redimensionamiento de sidebar
+    initializeSidebarResize();
+    
+    // Cargar datos GeoJSON
+    loadGeoJSONData().then(function(features) {
+        initializeMapWithData(features);
+    });
+
+    // Configuración del sidebar
+    $('.sidebar-toggle-btn').on('click', function() {
+        toggleSidebar();
+    });
+
+    $(window).on("resize", function() {
+        checkScreenSize();
+        applyMargins();
+    });
+
+    // ... resto de tu código existente ...
 
     applyMargins();
     

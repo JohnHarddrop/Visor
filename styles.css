@@ -953,3 +953,250 @@ hr {
 .chart-legend::-webkit-scrollbar-thumb {
     background: #95a5a6;
 }
+
+/* ============================================
+   SIDEBAR AJUSTABLE EN ANCHO
+   ============================================ */
+
+.sidebar-left {
+    position: fixed;
+    top: 50px;
+    left: 0;
+    width: 350px; /* Ancho por defecto */
+    height: calc(100vh - 50px);
+    background-color: #f8f9fa;
+    z-index: 45;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    overflow-y: auto;
+    transition: width 0.3s ease;
+    resize: horizontal; /* Permite redimensionar horizontalmente */
+    overflow: auto; /* Para que el contenido se ajuste */
+    min-width: 300px; /* Ancho mínimo */
+    max-width: 600px; /* Ancho máximo */
+}
+
+/* Controlador de redimensionamiento (barra en el borde derecho) */
+.sidebar-left::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 5px;
+    height: 100%;
+    background: transparent;
+    cursor: col-resize;
+    z-index: 46;
+}
+
+/* Cuando el usuario está redimensionando */
+.sidebar-left.resizing::after {
+    background: rgba(52, 152, 219, 0.3);
+}
+
+/* Para el botón de toggle cuando sidebar es más ancha */
+.sidebar-left.expanded ~ .sidebar-toggle-btn {
+    transition: left 0.3s ease;
+}
+
+/* Ajustar el mapa cuando la sidebar cambia de tamaño */
+#map {
+    transition: margin-left 0.3s ease;
+}
+
+/* ============================================
+   CONTROLES DE TAMAÑO DE SIDEBAR
+   ============================================ */
+
+.sidebar-size-controls {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 47;
+    display: flex;
+    gap: 5px;
+}
+
+.size-control-btn {
+    width: 24px;
+    height: 24px;
+    background-color: rgba(255, 255, 255, 0.9);
+    border: 1px solid #bdc3c7;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 12px;
+    color: #2c3e50;
+    transition: all 0.2s ease;
+}
+
+.size-control-btn:hover {
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.size-control-btn.active {
+    background-color: #3498db;
+    color: white;
+    border-color: #2980b9;
+}
+
+/* Tamaños predefinidos */
+.sidebar-left.size-small {
+    width: 300px;
+}
+
+.sidebar-left.size-medium {
+    width: 400px;
+}
+
+.sidebar-left.size-large {
+    width: 500px;
+}
+
+.sidebar-left.size-extra-large {
+    width: 600px;
+}
+
+/* ============================================
+   MEJORAS PARA GRÁFICOS EN SIDEBAR
+   ============================================ */
+
+/* Cuando la sidebar es más ancha, los gráficos pueden ser más grandes */
+.sidebar-left.size-medium .chart-container,
+.sidebar-left.size-large .chart-container,
+.sidebar-left.size-extra-large .chart-container {
+    height: 250px;
+}
+
+.sidebar-left.size-medium .chart-container canvas,
+.sidebar-left.size-large .chart-container canvas,
+.sidebar-left.size-extra-large .chart-container canvas {
+    height: 200px !important;
+}
+
+/* Más espacio para dropdowns en sidebar más ancha */
+.sidebar-left.size-large .dropdown-menu {
+    min-width: 250px;
+}
+
+/* Gráficos más detallados en sidebar ancha */
+.sidebar-left.size-extra-large .chart-legend .legend-item-small {
+    font-size: 12px;
+    padding: 4px 8px;
+}
+
+/* ============================================
+   PANELES EXPANDIBLES DENTRO DE SIDEBAR
+   ============================================ */
+
+.panel-expandable .panel-heading {
+    cursor: pointer;
+}
+
+.panel-expandable .panel-body {
+    transition: max-height 0.3s ease;
+    overflow: hidden;
+}
+
+.panel-expandable.collapsed .panel-body {
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    border: none;
+}
+
+/* Botón para expandir/colapsar paneles */
+.panel-expand-toggle {
+    float: right;
+    margin-left: 10px;
+    color: white;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.panel-expandable.collapsed .panel-expand-toggle {
+    transform: rotate(-90deg);
+}
+
+/* ============================================
+   SIDEBAR COMPACT MODE (PARA MÁXIMO ESPACIO DE MAPA)
+   ============================================ */
+
+.sidebar-left.compact-mode {
+    width: 50px;
+    min-width: 50px;
+    overflow: hidden;
+}
+
+.sidebar-left.compact-mode .sidebar-body {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.sidebar-left.compact-mode .panel-heading {
+    padding: 5px;
+    text-align: center;
+}
+
+.sidebar-left.compact-mode .panel-title {
+    font-size: 0;
+}
+
+.sidebar-left.compact-mode .panel-title i {
+    font-size: 16px;
+    margin-right: 0;
+    display: block;
+}
+
+.sidebar-left.compact-mode .size-control-btn {
+    transform: scale(0.8);
+}
+
+/* ============================================
+   RESPONSIVE PARA SIDEBAR AJUSTABLE
+   ============================================ */
+
+@media (max-width: 768px) {
+    .sidebar-left {
+        resize: none; /* No redimensionar en móviles */
+        max-width: 100%;
+    }
+    
+    .sidebar-size-controls {
+        display: none; /* Ocultar controles en móviles */
+    }
+    
+    .sidebar-left::after {
+        display: none; /* Ocultar barra de redimensionamiento */
+    }
+}
+
+/* ============================================
+   VISUAL FEEDBACK PARA REDIMENSIONAMIENTO
+   ============================================ */
+
+body.resizing-sidebar {
+    cursor: col-resize;
+    user-select: none;
+}
+
+/* Indicador visual del ancho actual */
+.sidebar-width-indicator {
+    position: absolute;
+    top: 50%;
+    right: -30px;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 5px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    display: none;
+    z-index: 1000;
+}
+
+.sidebar-left.resizing .sidebar-width-indicator {
+    display: block;
+}
