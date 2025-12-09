@@ -801,3 +801,247 @@ hr {
         padding-right: 0;
     }
 }
+
+/* ============================================
+   CORRECCIONES LAYOUT COMPLETAS
+   ============================================ */
+
+/* 1. BOTÓN TOGGLE SIDEBAR - SIEMPRE VISIBLE */
+.mini-submenu-left {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    top: 60px;
+    left: 10px;
+    z-index: 1001;
+    background-color: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.9);
+    border-radius: 4px;
+    padding: 10px;
+    width: 42px;
+    height: 42px;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+}
+
+.mini-submenu-left:hover {
+    background-color: white;
+    transform: scale(1.05);
+}
+
+/* Cuando sidebar está abierta en desktop, botón dentro de sidebar */
+@media (min-width: 769px) {
+    .sidebar-left:not(.closed) .mini-submenu-left {
+        left: calc(350px - 42px - 10px);
+    }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+    .sidebar-left:not(.closed) .mini-submenu-left {
+        left: calc(300px - 42px - 10px);
+    }
+}
+
+/* 2. BOTONES DE ZOOM - POSICIÓN FIJA */
+.ol-zoom {
+    position: absolute;
+    bottom: 20px;
+    right: 10px;
+    top: auto !important;
+    left: auto !important;
+    margin: 0 !important;
+    z-index: 1000;
+}
+
+.ol-zoom button {
+    display: block;
+    margin: 2px;
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+    font-weight: bold;
+    background-color: rgba(255, 255, 255, 0.9);
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.ol-zoom button:hover {
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+/* 3. LEYENDA - ARRIBA A LA DERECHA */
+#legend {
+    position: absolute;
+    top: 60px;  /* Debajo del navbar */
+    right: 10px;
+    bottom: auto;
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 12px;
+    border-radius: 6px;
+    z-index: 1000;
+    max-width: 250px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    border: 1px solid #ddd;
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+}
+
+#legend h4 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #2c3e50;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+}
+
+/* 4. CONTENEDOR PARA MÚLTIPLES LEYENDAS */
+#legend-container {
+    position: absolute;
+    top: 60px;
+    right: 10px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 250px;
+}
+
+.legend-box {
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 12px;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    border: 1px solid #ddd;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.legend-box h5 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 13px;
+    color: #2c3e50;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+}
+
+.legend-box .legend-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 6px;
+    font-size: 12px;
+}
+
+.legend-box .legend-color {
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+    border: 1px solid #333;
+    border-radius: 3px;
+}
+
+/* 5. CORRECCIÓN PARA CUANDO SIDEBAR SE OCULTA */
+.sidebar-left.closed ~ #map .ol-zoom {
+    left: auto;
+    right: 10px;
+}
+
+/* 6. RESPONSIVE PARA LEYENDAS */
+@media (max-width: 768px) {
+    #legend {
+        top: 50px;
+        right: 10px;
+        max-width: 200px;
+        font-size: 12px;
+    }
+    
+    #legend-container {
+        top: 50px;
+        right: 10px;
+        max-width: 200px;
+    }
+    
+    .legend-box {
+        padding: 10px;
+        max-height: 250px;
+    }
+    
+    .legend-box h5 {
+        font-size: 12px;
+    }
+    
+    .ol-zoom {
+        bottom: 10px;
+        right: 10px;
+    }
+    
+    .ol-zoom button {
+        width: 32px;
+        height: 32px;
+        font-size: 16px;
+    }
+}
+
+/* 7. ESPACIO PARA BOTONES EN MÓVILES */
+@media (max-width: 480px) {
+    #legend {
+        max-width: 180px;
+        padding: 8px;
+    }
+    
+    #legend-container {
+        max-width: 180px;
+    }
+    
+    .mini-submenu-left {
+        top: 55px;
+        left: 5px;
+    }
+}
+
+/* 8. EVITAR SUPERPOSICIÓN CON LEYENDAS */
+#map {
+    z-index: 35;
+}
+
+/* 9. LEYENDA ESPECÍFICA PARA CATEGORÍAS DE MAREJADAS */
+#marejada-legend {
+    display: none; /* Inicialmente oculta */
+}
+
+.legend-marejada-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.marejada-color {
+    width: 18px;
+    height: 18px;
+    margin-right: 10px;
+    border: 1px solid #333;
+    border-radius: 50%; /* Círculos para categorías */
+}
+
+/* 10. BOTÓN PARA CAMBIAR LEYENDAS */
+.legend-toggle {
+    background-color: rgba(255, 255, 255, 0.9);
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 5px 10px;
+    font-size: 12px;
+    cursor: pointer;
+    margin-bottom: 5px;
+    display: inline-block;
+}
+
+.legend-toggle:hover {
+    background-color: white;
+}

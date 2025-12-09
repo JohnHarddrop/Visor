@@ -16,10 +16,10 @@
         <div class="container-fluid">
           <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
             </button>
             <a class="navbar-brand" href="#">WebGIS - Catastro de Marejadas</a>
           </div>
@@ -29,210 +29,240 @@
               <li><a href="#">Acerca de</a></li>
               <li><a href="#">Contacto</a></li>
             </ul>
-            <!-- Busca esta sección en tu index.html y actualízala: -->
             <form class="navbar-form navbar-left" role="search" id="search-form">
               <div class="form-group">
                 <input type="text" class="form-control" id="search-input" placeholder="Buscar ubicación...">
               </div>
-            <button type="submit" class="btn btn-default">
-              <span class="hidden-xs">Buscar</span>
-              <span class="visible-xs">🔍</span>
-            </button>
-            <button type="button" class="btn btn-primary" id="current-location-btn" title="Mi ubicación actual">
+              <button type="submit" class="btn btn-default">
+                <span class="hidden-xs">Buscar</span>
+                <span class="visible-xs-inline">🔍</span>
+              </button>
+              <button type="button" class="btn btn-primary" id="current-location-btn" title="Mi ubicación actual">
                 <i class="fa fa-location-arrow"></i>
-              <span class="hidden-xs">Mi ubicación</span>
-            </button>
+                <span class="hidden-xs">Mi ubicación</span>
+              </button>
             </form>
-            </div>
-            </div>
-          </nav>
-        </div>
-      
-      <div class="navbar-offset"></div>
-      <div id="map">
-        <!-- Leyenda integrada en el mapa -->
-        <div id="legend">
-          <h4>Leyenda - Nivel de Urgencia</h4>
-          <div class="legend-item">
-            <div class="legend-color" style="background-color: #e74c3c;"></div>
-            <span>Alta Urgencia (Nivel 3)</span>
-          </div>
-          <div class="legend-item">
-            <div class="legend-color" style="background-color: #f39c12;"></div>
-            <span>Media Urgencia (Nivel 2)</span>
-          </div>
-          <div class="legend-item">
-            <div class="legend-color" style="background-color: #f1c40f;"></div>
-            <span>Baja Urgencia (Nivel 1)</span>
           </div>
         </div>
-      </div>
-      
-      <div class="row main-row">
+      </nav>
+    </div>
+    
+    <div class="navbar-offset"></div>
+    
+    <!-- Contenedor de leyendas en la esquina superior derecha -->
+    <div id="legend-container">
+        <!-- Leyenda de urgencia (por defecto visible) -->
+        <div id="legend" class="legend-box">
+            <h5>Leyenda - Nivel de Urgencia</h5>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #e74c3c;"></div>
+                <span>Alta Urgencia (Nivel 3)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #f39c12;"></div>
+                <span>Media Urgencia (Nivel 2)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #f1c40f;"></div>
+                <span>Baja Urgencia (Nivel 1)</span>
+            </div>
+            
+            <!-- Botón para cambiar a leyenda de marejadas -->
+            <button class="legend-toggle" id="toggle-marejada-legend">
+                Ver Categorías Marejadas
+            </button>
+        </div>
+        
+        <!-- Leyenda de categorías de marejadas (inicialmente oculta) -->
+        <div id="marejada-legend" class="legend-box" style="display: none;">
+            <h5>Leyenda - Categorías de Marejadas</h5>
+            <div class="legend-marejada-item">
+                <div class="marejada-color" style="background-color: #3498db;"></div>
+                <span>Categoría N+</span>
+            </div>
+            <div class="legend-marejada-item">
+                <div class="marejada-color" style="background-color: #2ecc71;"></div>
+                <span>Categoría N</span>
+            </div>
+            <div class="legend-marejada-item">
+                <div class="marejada-color" style="background-color: #e67e22;"></div>
+                <span>Categoría N-</span>
+            </div>
+            
+            <!-- Botón para volver a leyenda de urgencia -->
+            <button class="legend-toggle" id="toggle-urgency-legend">
+                Ver Niveles de Urgencia
+            </button>
+        </div>
+    </div>
+    
+    <div id="map"></div>
+    
+    <div class="row main-row">
         <div class="col-sm-4 col-md-3 sidebar sidebar-left pull-left">
-          <div class="panel-group sidebar-body" id="accordion-left" style="display: block;">
-            <div class="panel panel-default">
-              <div class="panel-heading">
-                <h4 class="panel-title">
-                  <a data-toggle="collapse" href="#filters-panel">
-                    <i class="fa fa-filter"></i>
-                    Filtros
-                  </a>
-                  <span class="pull-right slide-submenu">
-                    <i class="fa fa-chevron-left"></i>
-                  </span>
-                </h4>
-              </div>
-              <div id="filters-panel" class="panel-collapse collapse in">
-                <div class="panel-body">
-                  <form id="filter-form">
-                    <div class="filter-group">
-                      <label for="filter-type">Tipo de Lugar:</label>
-                      <select id="filter-type">
-                        <option value="">Todos</option>
-                        <option value="calzada">Calzada</option>
-                        <option value="vereda">Vereda</option>
-                        <option value="playa">Playa</option>
-                        <option value="vivienda">Vivienda</option>
-                        <option value="infraestructura">Infraestructura</option>
-                        <option value="otro">Otro</option>
-                      </select>
+            <div class="panel-group sidebar-body" id="accordion-left" style="display: block;">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" href="#filters-panel">
+                                <i class="fa fa-filter"></i>
+                                Filtros
+                            </a>
+                            <span class="pull-right slide-submenu">
+                                <i class="fa fa-chevron-left"></i>
+                            </span>
+                        </h4>
                     </div>
-                    
-                    <div class="filter-group">
-                      <label for="filter-category">Categoría Marejada:</label>
-                      <select id="filter-category">
-                        <option value="">Todos</option>
-                        <option value="N_plus">N+</option>
-                        <option value="N">N</option>
-                        <option value="N_minus">N-</option>
-                      </select>
+                    <div id="filters-panel" class="panel-collapse collapse in">
+                        <div class="panel-body">
+                            <form id="filter-form">
+                                <div class="filter-group">
+                                    <label for="filter-type">Tipo de Lugar:</label>
+                                    <select id="filter-type">
+                                        <option value="">Todos</option>
+                                        <option value="calzada">Calzada</option>
+                                        <option value="vereda">Vereda</option>
+                                        <option value="playa">Playa</option>
+                                        <option value="vivienda">Vivienda</option>
+                                        <option value="infraestructura">Infraestructura</option>
+                                        <option value="otro">Otro</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="filter-group">
+                                    <label for="filter-category">Categoría Marejada:</label>
+                                    <select id="filter-category">
+                                        <option value="">Todos</option>
+                                        <option value="N_plus">N+</option>
+                                        <option value="N">N</option>
+                                        <option value="N_minus">N-</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="filter-group">
+                                    <label for="filter-rain">Lluvia:</label>
+                                    <select id="filter-rain">
+                                        <option value="">Todos</option>
+                                        <option value="no_lluvia">Sin lluvia</option>
+                                        <option value="lluvia_leve">Lluvia leve</option>
+                                        <option value="lluvia_moderada">Lluvia moderada</option>
+                                        <option value="lluvia_intensa">Lluvia intensa</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="filter-group">
+                                    <label for="filter-urgency">Nivel de Urgencia:</label>
+                                    <select id="filter-urgency">
+                                        <option value="">Todos</option>
+                                        <option value="Alto">Alto</option>
+                                        <option value="Medio">Medio</option>
+                                        <option value="Bajo">Bajo</option>
+                                    </select>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-primary btn-block">Aplicar Filtros</button>
+                                <button type="button" id="reset-filters" class="btn btn-default btn-block" style="margin-top: 5px;">
+                                    Limpiar Filtros
+                                </button>
+                            </form>
+                        </div>
                     </div>
-                    
-                    <div class="filter-group">
-                      <label for="filter-rain">Lluvia:</label>
-                      <select id="filter-rain">
-                        <option value="">Todos</option>
-                        <option value="no_lluvia">Sin lluvia</option>
-                        <option value="lluvia_leve">Lluvia leve</option>
-                        <option value="lluvia_moderada">Lluvia moderada</option>
-                        <option value="lluvia_intensa">Lluvia intensa</option>
-                      </select>
-                    </div>
-                    
-                    <div class="filter-group">
-                      <label for="filter-urgency">Nivel de Urgencia:</label>
-                      <select id="filter-urgency">
-                        <option value="">Todos</option>
-                        <option value="Alto">Alto</option>
-                        <option value="Medio">Medio</option>
-                        <option value="Bajo">Bajo</option>
-                      </select>
-                    </div>
-                    
-                    <button type="submit" class="btn btn-primary btn-block">Aplicar Filtros</button>
-                    <button type="button" id="reset-filters" class="btn btn-default btn-block" style="margin-top: 5px;">
-                      Limpiar Filtros
-                    </button>
-                  </form>
                 </div>
-              </div>
-            </div>
-            
-            <div class="panel panel-default">
-              <div class="panel-heading">
-                <h4 class="panel-title">
-                  <a data-toggle="collapse" href="#statistics-panel">
-                    <i class="fa fa-bar-chart"></i>
-                    Estadísticas
-                  </a>
-                </h4>
-              </div>
-              <div id="statistics-panel" class="panel-collapse collapse in">
-                <div class="panel-body">
-                  <div class="stat-item">
-                    <strong>Total de Reportes:</strong> <span id="total-reports" class="stat-value">0</span>
-                  </div>
-                  <div class="stat-item">
-                    <strong>Alta Urgencia:</strong> <span id="high-urgency" class="stat-value">0</span>
-                  </div>
-                  <div class="stat-item">
-                    <strong>Media Urgencia:</strong> <span id="medium-urgency" class="stat-value">0</span>
-                  </div>
-                  <div class="stat-item">
-                    <strong>Baja Urgencia:</strong> <span id="low-urgency" class="stat-value">0</span>
-                  </div>
-                  <hr>
-                  <div class="stat-item">
-                    <strong>Tipo Calzada:</strong> <span id="tipo-calzada" class="stat-value">0</span>
-                  </div>
-                  <div class="stat-item">
-                    <strong>Tipo Vereda:</strong> <span id="tipo-vereda" class="stat-value">0</span>
-                  </div>
-                  <div class="stat-item">
-                    <strong>Tipo Playa:</strong> <span id="tipo-playa" class="stat-value">0</span>
-                  </div>
-                  <div class="stat-item">
-                    <strong>Tipo Vivienda:</strong> <span id="tipo-vivienda" class="stat-value">0</span>
-                  </div>
-                  <div class="stat-item">
-                    <strong>Tipo Infraestructura:</strong> <span id="tipo-infraestructura" class="stat-value">0</span>
-                  </div>
-                  <div class="stat-item">
-                    <strong>Tipo Otro:</strong> <span id="tipo-otro" class="stat-value">0</span>
-                  </div>
-                  <hr>
-                  <div class="stat-item">
-                    <strong>Categoría N+:</strong> <span id="categoria-n-plus" class="stat-value">0</span>
-                  </div>
-                  <div class="stat-item">
-                    <strong>Categoría N:</strong> <span id="categoria-n" class="stat-value">0</span>
-                  </div>
-                  <div class="stat-item">
-                    <strong>Categoría N-:</strong> <span id="categoria-n-minus" class="stat-value">0</span>
-                  </div>
-                  <hr>
-                  <div class="stat-item">
-                    <strong>Sin Lluvia:</strong> <span id="lluvia-no" class="stat-value">0</span>
-                  </div>
-                  <div class="stat-item">
-                    <strong>Lluvia Leve:</strong> <span id="lluvia-leve" class="stat-value">0</span>
-                  </div>
-                  <div class="stat-item">
-                    <strong>Lluvia Moderada:</strong> <span id="lluvia-moderada" class="stat-value">0</span>
-                  </div>
-                  <div class="stat-item">
-                    <strong>Lluvia Intensa:</strong> <span id="lluvia-intensa" class="stat-value">0</span>
-                  </div>
+                
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" href="#statistics-panel">
+                                <i class="fa fa-bar-chart"></i>
+                                Estadísticas
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="statistics-panel" class="panel-collapse collapse in">
+                        <div class="panel-body">
+                            <div class="stat-item">
+                                <strong>Total de Reportes:</strong> <span id="total-reports" class="stat-value">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <strong>Alta Urgencia:</strong> <span id="high-urgency" class="stat-value">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <strong>Media Urgencia:</strong> <span id="medium-urgency" class="stat-value">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <strong>Baja Urgencia:</strong> <span id="low-urgency" class="stat-value">0</span>
+                            </div>
+                            <hr>
+                            <div class="stat-item">
+                                <strong>Tipo Calzada:</strong> <span id="tipo-calzada" class="stat-value">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <strong>Tipo Vereda:</strong> <span id="tipo-vereda" class="stat-value">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <strong>Tipo Playa:</strong> <span id="tipo-playa" class="stat-value">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <strong>Tipo Vivienda:</strong> <span id="tipo-vivienda" class="stat-value">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <strong>Tipo Infraestructura:</strong> <span id="tipo-infraestructura" class="stat-value">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <strong>Tipo Otro:</strong> <span id="tipo-otro" class="stat-value">0</span>
+                            </div>
+                            <hr>
+                            <div class="stat-item">
+                                <strong>Categoría N+:</strong> <span id="categoria-n-plus" class="stat-value">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <strong>Categoría N:</strong> <span id="categoria-n" class="stat-value">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <strong>Categoría N-:</strong> <span id="categoria-n-minus" class="stat-value">0</span>
+                            </div>
+                            <hr>
+                            <div class="stat-item">
+                                <strong>Sin Lluvia:</strong> <span id="lluvia-no" class="stat-value">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <strong>Lluvia Leve:</strong> <span id="lluvia-leve" class="stat-value">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <strong>Lluvia Moderada:</strong> <span id="lluvia-moderada" class="stat-value">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <strong>Lluvia Intensa:</strong> <span id="lluvia-intensa" class="stat-value">0</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-              </div>
-            </div>
-            
-            <div class="panel panel-default">
-              <div class="panel-heading">
-                <h4 class="panel-title">
-                  <a data-toggle="collapse" href="#kobo-panel">
-                    <i class="fa fa-plus-circle"></i>
-                    Realizar Reporte
-                  </a>
-                </h4>
-              </div>
-              <div id="kobo-panel" class="panel-collapse collapse in">
-                <div class="panel-body">
-                  <p>Para reportar una nueva afectación por marejadas:</p>
-                  <button id="open-kobo-form" class="btn-kobo">Abrir Formulario Kobo</button>
-                  <p style="font-size: 12px; margin-top: 10px; color: #666;">
-                    El formulario se abrirá en una nueva ventana/tab.
-                  </p>
+                
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" href="#kobo-panel">
+                                <i class="fa fa-plus-circle"></i>
+                                Realizar Reporte
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="kobo-panel" class="panel-collapse collapse in">
+                        <div class="panel-body">
+                            <p>Para reportar una nueva afectación por marejadas:</p>
+                            <button id="open-kobo-form" class="btn-kobo">Abrir Formulario Kobo</button>
+                            <p style="font-size: 12px; margin-top: 10px; color: #666;">
+                                El formulario se abrirá en una nueva ventana/tab.
+                            </p>
+                        </div>
+                    </div>
                 </div>
-              </div>
             </div>
-          </div>
         </div>
-      </div>
-      <div class="mini-submenu mini-submenu-left pull-left" style="display: none;">
+    </div>
+    
+    <div class="mini-submenu mini-submenu-left pull-left">
         <i class="fa fa-bars"></i>
-      </div>
     </div>
 
     <!-- Scripts -->

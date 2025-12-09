@@ -566,6 +566,32 @@ function initializeMapWithData(features) {
     }
 }
 
+    // ============================================
+    // FUNCIONES PARA LEYENDAS INTERCAMBIABLES
+    // ============================================
+    
+    $('#toggle-marejada-legend').on('click', function() {
+        $('#legend').hide();
+        $('#marejada-legend').show();
+    });
+    
+    $('#toggle-urgency-legend').on('click', function() {
+        $('#marejada-legend').hide();
+        $('#legend').show();
+    });
+    
+    // ============================================
+    // CORRECCIÓN BOTÓN TOGGLE SIDEBAR
+    // ============================================
+    
+    // Asegurar que el botón de toggle siempre sea clickeable
+    $(document).on('click', '.mini-submenu-left', function() {
+        toggleSidebar();
+    });
+    
+    // Forzar visibilidad del botón
+    $('.mini-submenu-left').show().css('display', 'flex');
+
 function initializeEmptyMap() {
     map = new ol.Map({
         target: "map",
