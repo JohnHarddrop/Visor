@@ -1,0 +1,37 @@
+{
+  "type": "FeatureCollection",
+  "name": "TEST",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -73.179626,
+          -37.025243,
+          0.0
+        ]
+      },
+      "properties": {
+        "start": "2025-12-09T07:28:32.427-03:00",
+        "end": "2025-12-09T07:29:58.846-03:00",
+        "fecha_evento": "2025-12-09",
+        "hora_evento": "07:30:00.000-03:00",
+        "tipo_lugar": "calzada",
+        "categoria_marejada": "N_plus",
+        "altura_agua_cm": "5",
+        "clase_profundidad": "debajo_tobillo",
+        "lluvia": "no_lluvia",
+        "marea": "media",
+        "tipo_afectacion_principal": "inundacion_vereda",
+        "tipo_afectacion_secundaria": "inundacion_vereda inundacion_calle",
+        "nivel_danio": "1",
+        "tipo_usuario": "residente_principal",
+        "tenencia": "propietario",
+        "impacto_actividad": "sin_impacto",
+        "foto_evento": "logo png-7_29_38.png",
+        "comentarios": "test"
+      }
+    }
+  ]
+}
