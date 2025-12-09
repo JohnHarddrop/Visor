@@ -51,48 +51,123 @@
     
     <!-- Contenedor de leyendas en la esquina superior derecha -->
     <div id="legend-container">
-        <!-- Leyenda de urgencia (por defecto visible) -->
+        <!-- Leyenda de Nivel de Daño (por defecto visible) -->
         <div id="legend" class="legend-box">
-            <h5>Leyenda - Nivel de Urgencia</h5>
+            <h5>Leyenda - Nivel de Daño Percibido</h5>
             <div class="legend-item">
-                <div class="legend-color" style="background-color: #e74c3c;"></div>
-                <span>Alta Urgencia (Nivel 3)</span>
+                <div class="legend-circle" style="background-color: #2ecc71;"></div>
+                <span>1 — Leve</span>
             </div>
             <div class="legend-item">
-                <div class="legend-color" style="background-color: #f39c12;"></div>
-                <span>Media Urgencia (Nivel 2)</span>
+                <div class="legend-circle" style="background-color: #f39c12;"></div>
+                <span>2 — Moderado</span>
             </div>
             <div class="legend-item">
-                <div class="legend-color" style="background-color: #f1c40f;"></div>
-                <span>Baja Urgencia (Nivel 1)</span>
+                <div class="legend-circle" style="background-color: #e74c3c;"></div>
+                <span>3 — Severo</span>
             </div>
             
-            <!-- Botón para cambiar a leyenda de marejadas -->
-            <button class="legend-toggle" id="toggle-marejada-legend">
-                Ver Categorías Marejadas
-            </button>
+            <div class="legend-toggle-group">
+                <button class="legend-toggle-btn active" data-target="damage">
+                    Daño
+                </button>
+                <button class="legend-toggle-btn" data-target="location">
+                    Lugar
+                </button>
+                <button class="legend-toggle-btn" data-target="wave">
+                    Marejada
+                </button>
+            </div>
         </div>
         
-        <!-- Leyenda de categorías de marejadas (inicialmente oculta) -->
-        <div id="marejada-legend" class="legend-box" style="display: none;">
-            <h5>Leyenda - Categorías de Marejadas</h5>
-            <div class="legend-marejada-item">
-                <div class="marejada-color" style="background-color: #3498db;"></div>
-                <span>Categoría N+</span>
+        <!-- Leyenda de Tipo de Lugar (inicialmente oculta) -->
+        <div id="location-legend" class="legend-box" style="display: none;">
+            <h5>Leyenda - Tipo de Lugar</h5>
+            <div class="legend-item">
+                <div class="legend-circle" style="background-color: #3498db;"></div>
+                <span>Vereda</span>
             </div>
-            <div class="legend-marejada-item">
-                <div class="marejada-color" style="background-color: #2ecc71;"></div>
-                <span>Categoría N</span>
+            <div class="legend-item">
+                <div class="legend-circle" style="background-color: #9b59b6;"></div>
+                <span>Calzada o calle</span>
             </div>
-            <div class="legend-marejada-item">
-                <div class="marejada-color" style="background-color: #e67e22;"></div>
-                <span>Categoría N-</span>
+            <div class="legend-item">
+                <div class="legend-circle" style="background-color: #e67e22;"></div>
+                <span>Interior de vivienda</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-circle" style="background-color: #1abc9c;"></div>
+                <span>Interior de comercio</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-circle" style="background-color: #d35400;"></div>
+                <span>Espacio público costero</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-circle" style="background-color: #c0392b;"></div>
+                <span>Infraestructura crítica</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-circle" style="background-color: #16a085;"></div>
+                <span>Playa o roqueríos</span>
             </div>
             
-            <!-- Botón para volver a leyenda de urgencia -->
-            <button class="legend-toggle" id="toggle-urgency-legend">
-                Ver Niveles de Urgencia
-            </button>
+            <div class="legend-toggle-group">
+                <button class="legend-toggle-btn" data-target="damage">
+                    Daño
+                </button>
+                <button class="legend-toggle-btn active" data-target="location">
+                    Lugar
+                </button>
+                <button class="legend-toggle-btn" data-target="wave">
+                    Marejada
+                </button>
+            </div>
+        </div>
+        
+        <!-- Leyenda de Categorías de Marejadas (inicialmente oculta) -->
+        <div id="wave-legend" class="legend-box" style="display: none;">
+            <h5>Leyenda - Categoría de Marejada</h5>
+            <div class="legend-item">
+                <div class="legend-circle" style="background-color: #27ae60;"></div>
+                <span>N — Oleaje normal</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-circle" style="background-color: #f1c40f;"></div>
+                <span>N+ — Oleaje fuerte</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-circle" style="background-color: #e67e22;"></div>
+                <span>M1 — Categoría 1</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-circle" style="background-color: #d35400;"></div>
+                <span>M2 — Categoría 2</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-circle" style="background-color: #c0392b;"></div>
+                <span>M3 — Categoría 3</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-circle" style="background-color: #8e44ad;"></div>
+                <span>M4 — Categoría 4</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-circle" style="background-color: #2c3e50;"></div>
+                <span>M5 — Categoría 5</span>
+            </div>
+            
+            <div class="legend-toggle-group">
+                <button class="legend-toggle-btn" data-target="damage">
+                    Daño
+                </button>
+                <button class="legend-toggle-btn" data-target="location">
+                    Lugar
+                </button>
+                <button class="legend-toggle-btn active" data-target="wave">
+                    Marejada
+                </button>
+            </div>
         </div>
     </div>
     
@@ -100,7 +175,7 @@
     
     <div class="row main-row">
         <div class="col-sm-4 col-md-3 sidebar sidebar-left pull-left">
-            <div class="panel-group sidebar-body" id="accordion-left" style="display: block;">
+            <div class="panel-group sidebar-body" id="accordion-left">
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h4 class="panel-title">
@@ -117,33 +192,38 @@
                         <div class="panel-body">
                             <form id="filter-form">
                                 <div class="filter-group">
-                                    <label for="filter-type">Tipo de Lugar:</label>
-                                    <select id="filter-type">
+                                    <label for="filter-location">Tipo de Lugar:</label>
+                                    <select id="filter-location">
                                         <option value="">Todos</option>
-                                        <option value="calzada">Calzada</option>
                                         <option value="vereda">Vereda</option>
-                                        <option value="playa">Playa</option>
-                                        <option value="vivienda">Vivienda</option>
-                                        <option value="infraestructura">Infraestructura</option>
-                                        <option value="otro">Otro</option>
+                                        <option value="calzada_calle">Calzada o calle</option>
+                                        <option value="interior_vivienda">Interior de vivienda</option>
+                                        <option value="interior_comercio">Interior de comercio o servicio</option>
+                                        <option value="espacio_publico">Espacio público costero</option>
+                                        <option value="infraestructura">Infraestructura crítica</option>
+                                        <option value="playa">Playa o sector de roqueríos</option>
                                     </select>
                                 </div>
                                 
                                 <div class="filter-group">
-                                    <label for="filter-category">Categoría Marejada:</label>
-                                    <select id="filter-category">
-                                        <option value="">Todos</option>
-                                        <option value="N_plus">N+</option>
-                                        <option value="N">N</option>
-                                        <option value="N_minus">N-</option>
+                                    <label for="filter-wave">Categoría de Marejada:</label>
+                                    <select id="filter-wave">
+                                        <option value="">Todas</option>
+                                        <option value="N">N — Oleaje normal</option>
+                                        <option value="N_plus">N+ — Oleaje fuerte</option>
+                                        <option value="M1">M1 — Categoría 1</option>
+                                        <option value="M2">M2 — Categoría 2</option>
+                                        <option value="M3">M3 — Categoría 3</option>
+                                        <option value="M4">M4 — Categoría 4</option>
+                                        <option value="M5">M5 — Categoría 5</option>
                                     </select>
                                 </div>
                                 
                                 <div class="filter-group">
-                                    <label for="filter-rain">Lluvia:</label>
+                                    <label for="filter-rain">Lluvia durante el evento:</label>
                                     <select id="filter-rain">
                                         <option value="">Todos</option>
-                                        <option value="no_lluvia">Sin lluvia</option>
+                                        <option value="no_lluvia">No había lluvia</option>
                                         <option value="lluvia_leve">Lluvia leve</option>
                                         <option value="lluvia_moderada">Lluvia moderada</option>
                                         <option value="lluvia_intensa">Lluvia intensa</option>
@@ -151,12 +231,38 @@
                                 </div>
                                 
                                 <div class="filter-group">
-                                    <label for="filter-urgency">Nivel de Urgencia:</label>
-                                    <select id="filter-urgency">
+                                    <label for="filter-tide">Condición de marea:</label>
+                                    <select id="filter-tide">
+                                        <option value="">Todas</option>
+                                        <option value="marea_baja">Marea baja</option>
+                                        <option value="marea_media">Marea media</option>
+                                        <option value="marea_alta">Marea alta</option>
+                                        <option value="no_sabe">No sabe</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="filter-group">
+                                    <label for="filter-damage">Nivel de Daño:</label>
+                                    <select id="filter-damage">
                                         <option value="">Todos</option>
-                                        <option value="Alto">Alto</option>
-                                        <option value="Medio">Medio</option>
-                                        <option value="Bajo">Bajo</option>
+                                        <option value="1">1 — Leve</option>
+                                        <option value="2">2 — Moderado</option>
+                                        <option value="3">3 — Severo</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="filter-group">
+                                    <label for="filter-affectation">Afectación Principal:</label>
+                                    <select id="filter-affectation">
+                                        <option value="">Todas</option>
+                                        <option value="inundacion_vereda">Inundación de vereda</option>
+                                        <option value="inundacion_calle">Inundación de calle o vía</option>
+                                        <option value="inundacion_vivienda">Inundación de vivienda</option>
+                                        <option value="inundacion_comercio">Inundación de comercio o servicio</option>
+                                        <option value="danio_infraestructura">Daño a infraestructura</option>
+                                        <option value="erosion">Erosión o socavación</option>
+                                        <option value="arrastre">Arrastre de objetos o vehículos</option>
+                                        <option value="salpicaduras">Salpicaduras sin inundación</option>
                                     </select>
                                 </div>
                                 
@@ -184,55 +290,36 @@
                                 <strong>Total de Reportes:</strong> <span id="total-reports" class="stat-value">0</span>
                             </div>
                             <div class="stat-item">
-                                <strong>Alta Urgencia:</strong> <span id="high-urgency" class="stat-value">0</span>
+                                <strong>Daño Severo (3):</strong> <span id="damage-severe" class="stat-value">0</span>
                             </div>
                             <div class="stat-item">
-                                <strong>Media Urgencia:</strong> <span id="medium-urgency" class="stat-value">0</span>
+                                <strong>Daño Moderado (2):</strong> <span id="damage-moderate" class="stat-value">0</span>
                             </div>
                             <div class="stat-item">
-                                <strong>Baja Urgencia:</strong> <span id="low-urgency" class="stat-value">0</span>
-                            </div>
-                            <hr>
-                            <div class="stat-item">
-                                <strong>Tipo Calzada:</strong> <span id="tipo-calzada" class="stat-value">0</span>
-                            </div>
-                            <div class="stat-item">
-                                <strong>Tipo Vereda:</strong> <span id="tipo-vereda" class="stat-value">0</span>
-                            </div>
-                            <div class="stat-item">
-                                <strong>Tipo Playa:</strong> <span id="tipo-playa" class="stat-value">0</span>
-                            </div>
-                            <div class="stat-item">
-                                <strong>Tipo Vivienda:</strong> <span id="tipo-vivienda" class="stat-value">0</span>
-                            </div>
-                            <div class="stat-item">
-                                <strong>Tipo Infraestructura:</strong> <span id="tipo-infraestructura" class="stat-value">0</span>
-                            </div>
-                            <div class="stat-item">
-                                <strong>Tipo Otro:</strong> <span id="tipo-otro" class="stat-value">0</span>
+                                <strong>Daño Leve (1):</strong> <span id="damage-mild" class="stat-value">0</span>
                             </div>
                             <hr>
                             <div class="stat-item">
-                                <strong>Categoría N+:</strong> <span id="categoria-n-plus" class="stat-value">0</span>
+                                <strong>Marejada M3+:</strong> <span id="wave-severe" class="stat-value">0</span>
                             </div>
                             <div class="stat-item">
-                                <strong>Categoría N:</strong> <span id="categoria-n" class="stat-value">0</span>
+                                <strong>Marejada M1-M2:</strong> <span id="wave-moderate" class="stat-value">0</span>
                             </div>
                             <div class="stat-item">
-                                <strong>Categoría N-:</strong> <span id="categoria-n-minus" class="stat-value">0</span>
+                                <strong>Marejada N/N+:</strong> <span id="wave-mild" class="stat-value">0</span>
                             </div>
                             <hr>
                             <div class="stat-item">
-                                <strong>Sin Lluvia:</strong> <span id="lluvia-no" class="stat-value">0</span>
+                                <strong>Inundación Calle:</strong> <span id="affectation-street" class="stat-value">0</span>
                             </div>
                             <div class="stat-item">
-                                <strong>Lluvia Leve:</strong> <span id="lluvia-leve" class="stat-value">0</span>
+                                <strong>Inundación Vivienda:</strong> <span id="affectation-house" class="stat-value">0</span>
                             </div>
                             <div class="stat-item">
-                                <strong>Lluvia Moderada:</strong> <span id="lluvia-moderada" class="stat-value">0</span>
+                                <strong>Daño Infraestructura:</strong> <span id="affectation-infra" class="stat-value">0</span>
                             </div>
                             <div class="stat-item">
-                                <strong>Lluvia Intensa:</strong> <span id="lluvia-intensa" class="stat-value">0</span>
+                                <strong>Erosión:</strong> <span id="affectation-erosion" class="stat-value">0</span>
                             </div>
                         </div>
                     </div>
@@ -261,7 +348,8 @@
         </div>
     </div>
     
-    <div class="mini-submenu mini-submenu-left pull-left">
+    <!-- Botón para mostrar/ocultar sidebar -->
+    <div class="sidebar-toggle-btn">
         <i class="fa fa-bars"></i>
     </div>
 

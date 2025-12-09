@@ -1,40 +1,105 @@
-/* Estilos generales */
+/* ============================================
+   ESTILOS GENERALES Y RESET
+   ============================================ */
 body { 
     overflow: hidden; 
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
 }
 
 .navbar-offset { 
-    margin-top: 50px; 
-    height: 0;
+    height: 50px;
 }
 
-/* Mapa */
+/* ============================================
+   MAPA
+   ============================================ */
 #map { 
     position: fixed; 
     top: 50px; 
     bottom: 0; 
     left: 0; 
     right: 0; 
-    transition: margin-left 0.3s ease;
     z-index: 35;
 }
 
-#map .ol-zoom { 
-    font-size: 1.2em; 
-    margin-top: 5px;
-    margin-left: 5px;
+/* ============================================
+   NAVBAR Y BÚSQUEDA
+   ============================================ */
+.navbar {
+    min-height: 50px;
+    margin-bottom: 0;
+    z-index: 1030;
 }
 
-.zoom-top-opened-sidebar { 
-    margin-top: 5px; 
+.navbar-header {
+    float: left;
 }
 
-.zoom-top-collapsed { 
-    margin-top: 45px; 
+.navbar-toggle {
+    margin-right: 15px;
+    margin-top: 8px;
+    margin-bottom: 8px;
 }
 
-/* Sidebar principal */
+.navbar-form {
+    margin-top: 8px;
+    margin-bottom: 8px;
+    padding-left: 15px;
+    padding-right: 15px;
+    border: none;
+    box-shadow: none;
+}
+
+#search-form {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    margin-left: 15px;
+}
+
+#search-input {
+    min-width: 200px;
+    width: auto;
+    flex-grow: 1;
+    margin-right: 5px;
+    padding: 6px 12px;
+    border: 1px solid #bdc3c7;
+    border-radius: 4px;
+}
+
+#search-form .btn-default {
+    white-space: nowrap;
+    flex-shrink: 0;
+    background-color: #5cb85c;
+    border-color: #4cae4c;
+    color: white;
+    margin-right: 5px;
+}
+
+#search-form .btn-default:hover {
+    background-color: #449d44;
+    border-color: #398439;
+}
+
+#current-location-btn {
+    margin-left: 0;
+    padding: 6px 12px;
+    flex-shrink: 0;
+    background-color: #5bc0de;
+    border-color: #46b8da;
+    color: white;
+}
+
+#current-location-btn:hover {
+    background-color: #31b0d5;
+    border-color: #269abc;
+}
+
+/* ============================================
+   SIDEBAR PRINCIPAL
+   ============================================ */
 .sidebar-left {
     position: fixed;
     top: 50px;
@@ -45,16 +110,57 @@ body {
     z-index: 45;
     box-shadow: 2px 0 5px rgba(0,0,0,0.1);
     overflow-y: auto;
-    transition: transform 0.3s ease, width 0.3s ease;
+    transition: transform 0.3s ease;
+}
+
+.sidebar-left.collapsed {
+    transform: translateX(-100%);
+}
+
+.sidebar-left.expanded {
+    transform: translateX(0);
 }
 
 .sidebar-body {
-    padding: 10px;
+    padding: 15px;
     height: 100%;
     overflow-y: auto;
 }
 
-/* Panel groups dentro del sidebar */
+/* ============================================
+   BOTÓN TOGGLE SIDEBAR (ÚNICO Y FUNCIONAL)
+   ============================================ */
+.sidebar-toggle-btn {
+    position: fixed;
+    top: 60px;
+    left: 10px;
+    z-index: 1001;
+    background-color: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.9);
+    border-radius: 4px;
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+}
+
+.sidebar-toggle-btn:hover {
+    background-color: white;
+    transform: scale(1.05);
+}
+
+/* Cuando sidebar está expandida, mover botón al borde */
+.sidebar-left.expanded ~ .sidebar-toggle-btn {
+    left: calc(350px - 42px - 10px);
+}
+
+/* ============================================
+   PANELES DENTRO DE SIDEBAR
+   ============================================ */
 .panel-group {
     margin-bottom: 15px;
 }
@@ -63,6 +169,7 @@ body {
     border-radius: 6px;
     overflow: hidden;
     margin-bottom: 10px;
+    border: 1px solid #ddd;
 }
 
 .panel-default {
@@ -73,8 +180,6 @@ body {
     padding: 10px 15px;
     background-color: #2c3e50 !important;
     border-bottom: 1px solid transparent;
-    border-top-left-radius: 3px;
-    border-top-right-radius: 3px;
 }
 
 .panel-title {
@@ -99,88 +204,28 @@ body {
 
 .panel-body {
     padding: 15px;
-    max-height: 400px;
+    max-height: 300px;
     overflow-y: auto;
-    transition: max-height 0.3s ease;
-}
-
-/* Botón de toggle sidebar */
-.mini-submenu{
-    display: none;  
-    background-color: rgba(255, 255, 255, 0.95);
-    border: 1px solid rgba(0, 0, 0, 0.9);
-    border-radius: 4px;
-    padding: 10px;  
-    width: 42px;
-    height: 42px;
-    text-align: center;
-    cursor: pointer;
-    z-index: 1000;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-}
-
-.mini-submenu-left {
-    position: fixed;
-    top: 60px;
-    left: 10px;
-    z-index: 1000;
-}
-
-.mini-submenu:hover{
     background-color: white;
 }
 
-.slide-submenu{
+.slide-submenu {
     background: rgba(0, 0, 0, 0.3);
     display: inline-block;
     padding: 2px 8px;
     border-radius: 4px;
     cursor: pointer;
     margin-left: auto;
+    color: white;
 }
 
 .slide-submenu:hover {
     background: rgba(0, 0, 0, 0.4);
 }
 
-/* Leyenda integrada en el mapa */
-#legend {
-    background-color: rgba(255, 255, 255, 0.95);
-    padding: 12px;
-    position: absolute;
-    bottom: 20px;
-    right: 10px;
-    border-radius: 6px;
-    z-index: 1000;
-    max-width: 220px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-    border: 1px solid #ddd;
-}
-
-#legend h4 {
-    margin-top: 0;
-    margin-bottom: 10px;
-    font-size: 14px;
-    color: #2c3e50;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 5px;
-}
-
-.legend-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 6px;
-}
-
-.legend-color {
-    width: 20px;
-    height: 20px;
-    margin-right: 10px;
-    border: 1px solid #333;
-    border-radius: 3px;
-}
-
-/* Estilos para filtros */
+/* ============================================
+   FILTROS
+   ============================================ */
 .filter-group {
     margin-bottom: 15px;
 }
@@ -193,7 +238,7 @@ body {
     font-size: 13px;
 }
 
-.filter-group select, .filter-group input {
+.filter-group select {
     width: 100%;
     padding: 8px 10px;
     border-radius: 4px;
@@ -203,13 +248,15 @@ body {
     transition: border-color 0.3s ease;
 }
 
-.filter-group select:focus, .filter-group input:focus {
+.filter-group select:focus {
     outline: none;
     border-color: #3498db;
     box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
 }
 
-/* Botones */
+/* ============================================
+   BOTONES GENERALES
+   ============================================ */
 .btn, .btn-kobo {
     padding: 10px 15px;
     border-radius: 4px;
@@ -251,18 +298,9 @@ body {
     background-color: #229954;
 }
 
-#current-location-btn {
-    background-color: #9b59b6;
-    border-color: #8e44ad;
-    color: white;
-}
-
-#current-location-btn:hover {
-    background-color: #8e44ad;
-    border-color: #7d3c98;
-}
-
-/* Estadísticas */
+/* ============================================
+   ESTADÍSTICAS
+   ============================================ */
 .stat-item {
     margin-bottom: 8px;
     padding: 8px 10px;
@@ -295,7 +333,132 @@ hr {
     border-top: 1px solid #e0e0e0;
 }
 
-/* Popups */
+/* ============================================
+   CONTENEDOR DE LEYENDAS (ARRIBA DERECHA)
+   ============================================ */
+#legend-container {
+    position: fixed;
+    top: 60px;
+    right: 10px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 250px;
+}
+
+/* ============================================
+   CAJAS DE LEYENDA (ESTILO UNIFICADO)
+   ============================================ */
+.legend-box {
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 12px;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    border: 1px solid #ddd;
+    max-height: 350px;
+    overflow-y: auto;
+    width: 250px;
+}
+
+.legend-box h5 {
+    margin-top: 0;
+    margin-bottom: 12px;
+    font-size: 14px;
+    color: #2c3e50;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 8px;
+    font-weight: 600;
+}
+
+/* ============================================
+   ÍTEMS DE LEYENDA (ESTILO UNIFICADO)
+   ============================================ */
+.legend-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 13px;
+}
+
+.legend-circle {
+    width: 16px;
+    height: 16px;
+    margin-right: 10px;
+    border-radius: 50%;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    flex-shrink: 0;
+}
+
+/* ============================================
+   BOTONES TOGGLE LEYENDA
+   ============================================ */
+.legend-toggle-group {
+    display: flex;
+    gap: 5px;
+    margin-top: 10px;
+    border-top: 1px solid #eee;
+    padding-top: 10px;
+}
+
+.legend-toggle-btn {
+    flex: 1;
+    padding: 6px 8px;
+    border: 1px solid #bdc3c7;
+    background-color: #ecf0f1;
+    color: #2c3e50;
+    border-radius: 4px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+.legend-toggle-btn:hover {
+    background-color: #d5dbdb;
+}
+
+.legend-toggle-btn.active {
+    background-color: #3498db;
+    color: white;
+    border-color: #2980b9;
+}
+
+/* ============================================
+   BOTONES DE ZOOM (ABAJO DERECHA)
+   ============================================ */
+.ol-zoom {
+    position: fixed;
+    bottom: 20px;
+    right: 10px;
+    top: auto !important;
+    left: auto !important;
+    margin: 0 !important;
+    z-index: 1000;
+}
+
+.ol-zoom button {
+    display: block;
+    margin: 2px;
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+    font-weight: bold;
+    background-color: rgba(255, 255, 255, 0.9);
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.ol-zoom button:hover {
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+/* ============================================
+   POPUPS
+   ============================================ */
 .popup-content {
     background: white;
     padding: 15px;
@@ -324,7 +487,9 @@ hr {
     border: 1px solid #ddd;
 }
 
-/* Mensaje de carga */
+/* ============================================
+   MENSAJE DE CARGA
+   ============================================ */
 .loading-message {
     position: fixed;
     top: 50%;
@@ -340,14 +505,9 @@ hr {
     min-width: 200px;
 }
 
-.loading-message:before {
-    content: "⌛";
-    display: block;
-    font-size: 24px;
-    margin-bottom: 10px;
-}
-
-/* Scrollbar personalizado */
+/* ============================================
+   SCROLLBAR PERSONALIZADO
+   ============================================ */
 ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
@@ -367,264 +527,32 @@ hr {
     background: #95a5a6;
 }
 
-/* Media Queries para responsive design */
+/* ============================================
+   MEDIA QUERIES - RESPONSIVE
+   ============================================ */
 
-/* Pantallas medianas (tablets) */
+/* TABLETS */
 @media (max-width: 1024px) {
     .sidebar-left {
         width: 300px;
     }
     
-    #map {
-        margin-left: 300px;
+    .sidebar-left.expanded ~ .sidebar-toggle-btn {
+        left: calc(300px - 42px - 10px);
     }
     
-    .panel-body {
-        max-height: 350px;
-    }
-}
-
-/* Pantallas pequeñas (móviles) */
-@media (max-width: 768px) {
-    .sidebar-left {
-        width: 100%;
-        transform: translateX(-100%);
-        z-index: 1000;
+    .legend-box {
+        width: 220px;
     }
     
-    .sidebar-left.open {
-        transform: translateX(0);
-        box-shadow: 3px 0 10px rgba(0,0,0,0.3);
+    #legend-container {
+        max-width: 220px;
     }
-    
-    .sidebar-left.closed {
-        transform: translateX(-100%);
-    }
-    
-    #map {
-        margin-left: 0 !important;
-        left: 0;
-        right: 0;
-    }
-    
-    .mini-submenu-left {
-        display: flex !important;
-        align-items: center;
-        justify-content: center;
-        position: fixed;
-        top: 60px;
-        left: 10px;
-        z-index: 1001;
-    }
-    
-    .panel-body {
-        max-height: 300px;
-        padding: 12px;
-    }
-    
-    #legend {
-        max-width: 180px;
-        bottom: 10px;
-        right: 10px;
-        padding: 10px;
-        font-size: 12px;
-    }
-    
-    .legend-item {
-        margin-bottom: 4px;
-    }
-    
-    .legend-color {
-        width: 16px;
-        height: 16px;
-    }
-    
-    .navbar-form .form-group {
-        margin-bottom: 5px;
-    }
-    
-    #search-input {
-        width: 180px;
-    }
-}
-
-/* Pantallas muy pequeñas */
-@media (max-width: 480px) {
-    .sidebar-left {
-        width: 100%;
-    }
-    
-    .panel-body {
-        max-height: 250px;
-        padding: 10px;
-    }
-    
-    .filter-group label {
-        font-size: 12px;
-    }
-    
-    .filter-group select, .filter-group input {
-        padding: 6px 8px;
-        font-size: 12px;
-    }
-    
-    .btn, .btn-kobo {
-        padding: 8px 12px;
-        font-size: 12px;
-    }
-    
-    .stat-item {
-        font-size: 12px;
-        padding: 6px 8px;
-    }
-    
-    #legend {
-        max-width: 160px;
-        padding: 8px;
-        font-size: 11px;
-    }
-    
-    .legend-color {
-        width: 14px;
-        height: 14px;
-    }
-    
-    #search-input {
-        width: 150px;
-    }
-}
-
-/* Pantallas altas */
-@media (min-height: 900px) {
-    .panel-body {
-        max-height: 500px;
-    }
-}
-
-/* Pantallas bajas */
-@media (max-height: 600px) {
-    .panel-body {
-        max-height: 250px;
-    }
-    
-    .sidebar-left {
-        height: calc(100vh - 50px);
-    }
-}
-
-/* Ajustes para alta densidad de píxeles (HiDPI) */
-@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-    .mini-submenu,
-    .btn,
-    .filter-group select,
-    .filter-group input {
-        border-width: 0.5px;
-    }
-}
-
-/* Clases de utilidad */
-.hidden {
-    display: none !important;
-}
-
-.no-scroll {
-    overflow: hidden;
-}
-
-.text-center {
-    text-align: center;
-}
-
-.text-muted {
-    color: #7f8c8d;
-}
-
-/* Animaciones */
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-.fade-in {
-    animation: fadeIn 0.3s ease-in-out;
-}
-
-/* Estilos específicos para la búsqueda */
-#search-form {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-}
-
-#search-input {
-    min-width: 200px;
-}
-
-/* Estado activo de filtros */
-.filter-group select:not([value=""]) {
-    border-color: #3498db;
-    background-color: #ebf5fb;
-}
-
-/* Indicador de filtros activos */
-.filters-active::after {
-    content: " •";
-    color: #e74c3c;
-    font-weight: bold;
-}
-
-/* CORRECCIONES NAVBAR */
-.navbar {
-    min-height: 50px;
-    margin-bottom: 0;
-}
-
-.navbar-header {
-    float: left;
-}
-
-.navbar-toggle {
-    margin-right: 15px;
-    margin-top: 8px;
-    margin-bottom: 8px;
-}
-
-.navbar-form {
-    margin-top: 8px;
-    margin-bottom: 8px;
-    padding-left: 15px;
-    padding-right: 15px;
-    border: none;
-    box-shadow: none;
-}
-
-#search-form {
-    display: flex;
-    align-items: center;
-    flex-wrap: nowrap;
-    margin-left: 15px;
-}
-
-#search-input {
-    min-width: 200px;
-    width: auto;
-    flex-grow: 1;
-    margin-right: 5px;
-}
-
-#search-form .btn-default {
-    white-space: nowrap;
-    flex-shrink: 0;
-}
-
-#current-location-btn {
-    margin-left: 5px;
-    padding: 6px 12px;
-    flex-shrink: 0;
 }
 
 /* MÓVILES */
 @media (max-width: 768px) {
+    /* Navbar responsive */
     .navbar-collapse {
         max-height: none;
         padding-left: 15px;
@@ -670,6 +598,59 @@ hr {
         padding-top: 10px;
         padding-bottom: 10px;
     }
+    
+    /* Sidebar móvil */
+    .sidebar-left {
+        width: 100%;
+        z-index: 1000;
+    }
+    
+    .sidebar-left.expanded ~ .sidebar-toggle-btn {
+        left: calc(100% - 42px - 10px);
+    }
+    
+    /* Leyendas móvil */
+    #legend-container {
+        top: 50px;
+        right: 10px;
+        max-width: 200px;
+    }
+    
+    .legend-box {
+        width: 200px;
+        max-height: 300px;
+        padding: 10px;
+    }
+    
+    .legend-box h5 {
+        font-size: 13px;
+    }
+    
+    .legend-item {
+        font-size: 12px;
+    }
+    
+    .legend-circle {
+        width: 14px;
+        height: 14px;
+    }
+    
+    /* Botones zoom móvil */
+    .ol-zoom {
+        bottom: 10px;
+        right: 10px;
+    }
+    
+    .ol-zoom button {
+        width: 32px;
+        height: 32px;
+        font-size: 16px;
+    }
+    
+    .sidebar-toggle-btn {
+        top: 55px;
+        left: 5px;
+    }
 }
 
 /* TELÉFONOS PEQUEÑOS */
@@ -689,359 +670,70 @@ hr {
         font-size: 16px;
         padding: 15px 10px;
     }
-}
-
-/* TABLETS */
-@media (min-width: 769px) and (max-width: 991px) {
-    #search-input {
-        min-width: 150px;
-    }
-    
-    .navbar-form {
-        padding-left: 10px;
-        padding-right: 10px;
-    }
-}
-
-/* Z-INDEX */
-.navbar-fixed-top {
-    z-index: 1030;
-}
-
-.navbar-offset {
-    height: 50px;
-}
-
-/* NAVBAR COLLAPSE EN MÓVILES */
-@media (max-width: 768px) {
-    .navbar-collapse {
-        overflow-x: hidden;
-        overflow-y: auto;
-        max-height: calc(100vh - 50px);
-    }
-    
-    .navbar-collapse.in {
-        overflow-y: auto;
-    }
-}
-
-/* TOGGLE VISIBLE SOLO EN MÓVILES */
-.navbar-toggle {
-    display: none;
-}
-
-@media (max-width: 768px) {
-    .navbar-toggle {
-        display: block;
-    }
-}
-
-/* ALINEACIÓN NAVBAR */
-.navbar-nav {
-    margin-left: 15px;
-}
-
-@media (max-width: 768px) {
-    .navbar-nav {
-        margin-left: 0;
-    }
-}
-
-/* COLORES BOTONES DIFERENTES */
-#search-form .btn-default {
-    background-color: #5cb85c;
-    border-color: #4cae4c;
-    color: white;
-}
-
-#search-form .btn-default:hover {
-    background-color: #449d44;
-    border-color: #398439;
-}
-
-#current-location-btn {
-    background-color: #5bc0de;
-    border-color: #46b8da;
-    color: white;
-}
-
-#current-location-btn:hover {
-    background-color: #31b0d5;
-    border-color: #269abc;
-}
-
-/* ICONOS BOTONES */
-#search-form .btn-default::before {
-    content: "🔍";
-    margin-right: 5px;
-}
-
-/* PANTALLAS MUY PEQUEÑAS - SOLO ICONOS */
-@media (max-width: 400px) {
-    #search-form .btn-default span,
-    #current-location-btn span {
-        display: none;
-    }
-    
-    #search-form .btn-default::before {
-        content: "🔍";
-        margin-right: 0;
-        font-size: 16px;
-    }
-    
-    #current-location-btn i {
-        margin-right: 0;
-    }
-    
-    #search-form .btn-default,
-    #current-location-btn {
-        width: 40px;
-        text-align: center;
-        padding-left: 0;
-        padding-right: 0;
-    }
-}
-
-/* ============================================
-   CORRECCIONES LAYOUT COMPLETAS
-   ============================================ */
-
-/* 1. BOTÓN TOGGLE SIDEBAR - SIEMPRE VISIBLE */
-.mini-submenu-left {
-    display: flex !important;
-    align-items: center;
-    justify-content: center;
-    position: fixed;
-    top: 60px;
-    left: 10px;
-    z-index: 1001;
-    background-color: rgba(255, 255, 255, 0.95);
-    border: 1px solid rgba(0, 0, 0, 0.9);
-    border-radius: 4px;
-    padding: 10px;
-    width: 42px;
-    height: 42px;
-    text-align: center;
-    cursor: pointer;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    transition: all 0.3s ease;
-}
-
-.mini-submenu-left:hover {
-    background-color: white;
-    transform: scale(1.05);
-}
-
-/* Cuando sidebar está abierta en desktop, botón dentro de sidebar */
-@media (min-width: 769px) {
-    .sidebar-left:not(.closed) .mini-submenu-left {
-        left: calc(350px - 42px - 10px);
-    }
-}
-
-@media (min-width: 769px) and (max-width: 1024px) {
-    .sidebar-left:not(.closed) .mini-submenu-left {
-        left: calc(300px - 42px - 10px);
-    }
-}
-
-/* 2. BOTONES DE ZOOM - POSICIÓN FIJA */
-.ol-zoom {
-    position: absolute;
-    bottom: 20px;
-    right: 10px;
-    top: auto !important;
-    left: auto !important;
-    margin: 0 !important;
-    z-index: 1000;
-}
-
-.ol-zoom button {
-    display: block;
-    margin: 2px;
-    width: 36px;
-    height: 36px;
-    font-size: 18px;
-    font-weight: bold;
-    background-color: rgba(255, 255, 255, 0.9);
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.ol-zoom button:hover {
-    background-color: white;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-}
-
-/* 3. LEYENDA - ARRIBA A LA DERECHA */
-#legend {
-    position: absolute;
-    top: 60px;  /* Debajo del navbar */
-    right: 10px;
-    bottom: auto;
-    background-color: rgba(255, 255, 255, 0.95);
-    padding: 12px;
-    border-radius: 6px;
-    z-index: 1000;
-    max-width: 250px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-    border: 1px solid #ddd;
-    max-height: calc(100vh - 100px);
-    overflow-y: auto;
-}
-
-#legend h4 {
-    margin-top: 0;
-    margin-bottom: 10px;
-    font-size: 14px;
-    color: #2c3e50;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 5px;
-}
-
-/* 4. CONTENEDOR PARA MÚLTIPLES LEYENDAS */
-#legend-container {
-    position: absolute;
-    top: 60px;
-    right: 10px;
-    z-index: 1000;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    max-width: 250px;
-}
-
-.legend-box {
-    background-color: rgba(255, 255, 255, 0.95);
-    padding: 12px;
-    border-radius: 6px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-    border: 1px solid #ddd;
-    max-height: 300px;
-    overflow-y: auto;
-}
-
-.legend-box h5 {
-    margin-top: 0;
-    margin-bottom: 10px;
-    font-size: 13px;
-    color: #2c3e50;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 5px;
-}
-
-.legend-box .legend-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 6px;
-    font-size: 12px;
-}
-
-.legend-box .legend-color {
-    width: 16px;
-    height: 16px;
-    margin-right: 8px;
-    border: 1px solid #333;
-    border-radius: 3px;
-}
-
-/* 5. CORRECCIÓN PARA CUANDO SIDEBAR SE OCULTA */
-.sidebar-left.closed ~ #map .ol-zoom {
-    left: auto;
-    right: 10px;
-}
-
-/* 6. RESPONSIVE PARA LEYENDAS */
-@media (max-width: 768px) {
-    #legend {
-        top: 50px;
-        right: 10px;
-        max-width: 200px;
-        font-size: 12px;
-    }
-    
-    #legend-container {
-        top: 50px;
-        right: 10px;
-        max-width: 200px;
-    }
     
     .legend-box {
-        padding: 10px;
+        width: 180px;
         max-height: 250px;
     }
     
-    .legend-box h5 {
-        font-size: 12px;
-    }
-    
-    .ol-zoom {
-        bottom: 10px;
-        right: 10px;
-    }
-    
-    .ol-zoom button {
-        width: 32px;
-        height: 32px;
-        font-size: 16px;
-    }
-}
-
-/* 7. ESPACIO PARA BOTONES EN MÓVILES */
-@media (max-width: 480px) {
-    #legend {
-        max-width: 180px;
-        padding: 8px;
-    }
-    
     #legend-container {
         max-width: 180px;
     }
     
-    .mini-submenu-left {
-        top: 55px;
-        left: 5px;
+    .legend-toggle-btn {
+        font-size: 10px;
+        padding: 5px 6px;
     }
 }
 
-/* 8. EVITAR SUPERPOSICIÓN CON LEYENDAS */
-#map {
-    z-index: 35;
+/* PANTALLAS ALTAS */
+@media (min-height: 900px) {
+    .panel-body {
+        max-height: 400px;
+    }
+    
+    .legend-box {
+        max-height: 400px;
+    }
 }
 
-/* 9. LEYENDA ESPECÍFICA PARA CATEGORÍAS DE MAREJADAS */
-#marejada-legend {
-    display: none; /* Inicialmente oculta */
+/* PANTALLAS BAJAS */
+@media (max-height: 600px) {
+    .panel-body {
+        max-height: 200px;
+    }
+    
+    .sidebar-left {
+        height: calc(100vh - 50px);
+    }
+    
+    .legend-box {
+        max-height: 250px;
+    }
 }
 
-.legend-marejada-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 6px;
+/* AJUSTES PARA ALTA DENSIDAD DE PÍXELES */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .sidebar-toggle-btn,
+    .legend-toggle-btn,
+    .btn {
+        border-width: 0.5px;
+    }
 }
 
-.marejada-color {
-    width: 18px;
-    height: 18px;
-    margin-right: 10px;
-    border: 1px solid #333;
-    border-radius: 50%; /* Círculos para categorías */
+/* CLASES DE UTILIDAD */
+.hidden {
+    display: none !important;
 }
 
-/* 10. BOTÓN PARA CAMBIAR LEYENDAS */
-.legend-toggle {
-    background-color: rgba(255, 255, 255, 0.9);
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    padding: 5px 10px;
-    font-size: 12px;
-    cursor: pointer;
-    margin-bottom: 5px;
-    display: inline-block;
+.no-scroll {
+    overflow: hidden;
 }
 
-.legend-toggle:hover {
-    background-color: white;
+.text-center {
+    text-align: center;
+}
+
+.text-muted {
+    color: #7f8c8d;
 }
