@@ -270,7 +270,6 @@
                                 <button type="button" id="reset-filters" class="btn btn-default btn-block" style="margin-top: 5px;">
                                     Limpiar Filtros
                                 </button>
-                                <button id="heatmap-toggle" class="btn btn-info btn-block" style="margin-top: 10px;">Activar Mapa de Calor</button>
                             </form>
                         </div>
                     </div>
@@ -287,40 +286,168 @@
                     </div>
                     <div id="statistics-panel" class="panel-collapse collapse in">
                         <div class="panel-body">
-                            <div class="stat-item">
+                            <!-- Total siempre visible -->
+                            <div class="stat-item total-stat">
                                 <strong>Total de Reportes:</strong> <span id="total-reports" class="stat-value">0</span>
                             </div>
-                            <div class="stat-item">
-                                <strong>Daño Severo (3):</strong> <span id="damage-severe" class="stat-value">0</span>
+                            
+                            <!-- Dropdown para Nivel de Daño -->
+                            <div class="dropdown">
+                                <button class="btn btn-default btn-sm btn-block dropdown-toggle" type="button" data-toggle="dropdown">
+                                    Nivel de Daño <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu stat-dropdown-menu">
+                                    <li class="dropdown-header">Nivel de Daño</li>
+                                    <li>
+                                        <span class="stat-label">Severo (3):</span>
+                                        <span id="damage-severe" class="stat-value">0</span>
+                                    </li>
+                                    <li>
+                                        <span class="stat-label">Moderado (2):</span>
+                                        <span id="damage-moderate" class="stat-value">0</span>
+                                    </li>
+                                    <li>
+                                        <span class="stat-label">Leve (1):</span>
+                                        <span id="damage-mild" class="stat-value">0</span>
+                                    </li>
+                                </ul>
                             </div>
-                            <div class="stat-item">
-                                <strong>Daño Moderado (2):</strong> <span id="damage-moderate" class="stat-value">0</span>
+                            
+                            <!-- Dropdown para Categorías de Marejada -->
+                            <div class="dropdown">
+                                <button class="btn btn-default btn-sm btn-block dropdown-toggle" type="button" data-toggle="dropdown">
+                                    Categorías de Marejada <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu stat-dropdown-menu">
+                                    <li class="dropdown-header">Categorías de Marejada</li>
+                                    <li>
+                                        <span class="stat-label">M5:</span>
+                                        <span id="wave-m5" class="stat-value">0</span>
+                                    </li>
+                                    <li>
+                                        <span class="stat-label">M4:</span>
+                                        <span id="wave-m4" class="stat-value">0</span>
+                                    </li>
+                                    <li>
+                                        <span class="stat-label">M3:</span>
+                                        <span id="wave-m3" class="stat-value">0</span>
+                                    </li>
+                                    <li>
+                                        <span class="stat-label">M2:</span>
+                                        <span id="wave-m2" class="stat-value">0</span>
+                                    </li>
+                                    <li>
+                                        <span class="stat-label">M1:</span>
+                                        <span id="wave-m1" class="stat-value">0</span>
+                                    </li>
+                                    <li>
+                                        <span class="stat-label">N+:</span>
+                                        <span id="wave-n-plus" class="stat-value">0</span>
+                                    </li>
+                                    <li>
+                                        <span class="stat-label">N:</span>
+                                        <span id="wave-n" class="stat-value">0</span>
+                                    </li>
+                                </ul>
                             </div>
-                            <div class="stat-item">
-                                <strong>Daño Leve (1):</strong> <span id="damage-mild" class="stat-value">0</span>
+                            
+                            <!-- Dropdown para Tipos de Afectación -->
+                            <div class="dropdown">
+                                <button class="btn btn-default btn-sm btn-block dropdown-toggle" type="button" data-toggle="dropdown">
+                                    Tipos de Afectación <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu stat-dropdown-menu">
+                                    <li class="dropdown-header">Tipos de Afectación</li>
+                                    <li>
+                                        <span class="stat-label">Inund. Calle:</span>
+                                        <span id="affectation-street" class="stat-value">0</span>
+                                    </li>
+                                    <li>
+                                        <span class="stat-label">Inund. Vivienda:</span>
+                                        <span id="affectation-house" class="stat-value">0</span>
+                                    </li>
+                                    <li>
+                                        <span class="stat-label">Inund. Vereda:</span>
+                                        <span id="affectation-sidewalk" class="stat-value">0</span>
+                                    </li>
+                                    <li>
+                                        <span class="stat-label">Inund. Comercio:</span>
+                                        <span id="affectation-commerce" class="stat-value">0</span>
+                                    </li>
+                                    <li>
+                                        <span class="stat-label">Daño Infra:</span>
+                                        <span id="affectation-infra" class="stat-value">0</span>
+                                    </li>
+                                    <li>
+                                        <span class="stat-label">Erosión:</span>
+                                        <span id="affectation-erosion" class="stat-value">0</span>
+                                    </li>
+                                    <li>
+                                        <span class="stat-label">Arrastre:</span>
+                                        <span id="affectation-drag" class="stat-value">0</span>
+                                    </li>
+                                    <li>
+                                        <span class="stat-label">Salpicaduras:</span>
+                                        <span id="affectation-splash" class="stat-value">0</span>
+                                    </li>
+                                </ul>
                             </div>
+                            
+                            <!-- Dropdown para Tipo de Lugar -->
+                            <div class="dropdown">
+                                <button class="btn btn-default btn-sm btn-block dropdown-toggle" type="button" data-toggle="dropdown">
+                                    Tipo de Lugar <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu stat-dropdown-menu">
+                                    <li class="dropdown-header">Tipo de Lugar</li>
+                                    <li>
+                                        <span class="stat-label">Vereda:</span>
+                                        <span id="tipo-vereda" class="stat-value">0</span>
+                                    </li>
+                                    <li>
+                                        <span class="stat-label">Calzada:</span>
+                                        <span id="tipo-calzada" class="stat-value">0</span>
+                                    </li>
+                                    <li>
+                                        <span class="stat-label">Vivienda:</span>
+                                        <span id="tipo-vivienda" class="stat-value">0</span>
+                                    </li>
+                                    <li>
+                                        <span class="stat-label">Comercio:</span>
+                                        <span id="tipo-comercio" class="stat-value">0</span>
+                                    </li>
+                                    <li>
+                                        <span class="stat-label">Esp. Público:</span>
+                                        <span id="tipo-espacio-publico" class="stat-value">0</span>
+                                    </li>
+                                    <li>
+                                        <span class="stat-label">Infraestructura:</span>
+                                        <span id="tipo-infraestructura" class="stat-value">0</span>
+                                    </li>
+                                    <li>
+                                        <span class="stat-label">Playa:</span>
+                                        <span id="tipo-playa" class="stat-value">0</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            
                             <hr>
-                            <div class="stat-item">
-                                <strong>Marejada M3+:</strong> <span id="wave-severe" class="stat-value">0</span>
-                            </div>
-                            <div class="stat-item">
-                                <strong>Marejada M1-M2:</strong> <span id="wave-moderate" class="stat-value">0</span>
-                            </div>
-                            <div class="stat-item">
-                                <strong>Marejada N/N+:</strong> <span id="wave-mild" class="stat-value">0</span>
-                            </div>
-                            <hr>
-                            <div class="stat-item">
-                                <strong>Inundación Calle:</strong> <span id="affectation-street" class="stat-value">0</span>
-                            </div>
-                            <div class="stat-item">
-                                <strong>Inundación Vivienda:</strong> <span id="affectation-house" class="stat-value">0</span>
-                            </div>
-                            <div class="stat-item">
-                                <strong>Daño Infraestructura:</strong> <span id="affectation-infra" class="stat-value">0</span>
-                            </div>
-                            <div class="stat-item">
-                                <strong>Erosión:</strong> <span id="affectation-erosion" class="stat-value">0</span>
+                            
+                            <!-- Sección de Gráficos -->
+                            <div class="charts-section">
+                                <h5>Visualizaciones</h5>
+                                <div class="chart-selector">
+                                    <select id="chart-type-selector" class="form-control input-sm">
+                                        <option value="damage">Nivel de Daño</option>
+                                        <option value="wave">Categoría Marejada</option>
+                                        <option value="location">Tipo de Lugar</option>
+                                        <option value="affectation">Tipo de Afectación</option>
+                                    </select>
+                                </div>
+                                <div class="chart-container">
+                                    <canvas id="main-chart"></canvas>
+                                </div>
+                                <div class="chart-legend" id="chart-legend"></div>
                             </div>
                         </div>
                     </div>
@@ -355,6 +482,7 @@
     </div>
 
     <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/ol@7.3.0/dist/ol.js"></script>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>

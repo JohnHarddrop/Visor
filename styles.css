@@ -737,3 +737,218 @@ hr {
 .text-muted {
     color: #7f8c8d;
 }
+
+/* ============================================
+   DROPDOWNS PARA ESTADÍSTICAS (BOOTSTRAP COMPATIBLE)
+   ============================================ */
+.panel-body .dropdown {
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+.panel-body .dropdown .btn {
+    text-align: left;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #ecf0f1;
+    border: 1px solid #bdc3c7;
+    color: #2c3e50;
+    font-weight: 600;
+    padding: 8px 12px;
+}
+
+.panel-body .dropdown .btn:hover {
+    background-color: #d5dbdb;
+}
+
+.panel-body .dropdown .caret {
+    float: right;
+    margin-left: 5px;
+}
+
+.stat-dropdown-menu {
+    width: 100%;
+    padding: 10px;
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.175);
+}
+
+.stat-dropdown-menu .dropdown-header {
+    font-weight: bold;
+    color: #2c3e50;
+    padding: 5px 10px;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 5px;
+}
+
+.stat-dropdown-menu li {
+    padding: 5px 10px;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 13px;
+}
+
+.stat-dropdown-menu li:last-child {
+    border-bottom: none;
+}
+
+.stat-dropdown-menu li:hover {
+    background-color: #f5f5f5;
+}
+
+.stat-label {
+    color: #34495e;
+}
+
+.stat-value {
+    font-weight: bold;
+    color: #2c3e50;
+    background-color: #ecf0f1;
+    padding: 2px 8px;
+    border-radius: 3px;
+    min-width: 30px;
+    text-align: center;
+}
+
+.total-stat {
+    background-color: #e8f4fc;
+    border-left: 3px solid #3498db;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    font-size: 14px;
+}
+
+/* ============================================
+   SECCIÓN DE GRÁFICOS
+   ============================================ */
+.charts-section {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 2px solid #3498db;
+}
+
+.charts-section h5 {
+    color: #2c3e50;
+    margin-bottom: 15px;
+    font-weight: 600;
+    text-align: center;
+    font-size: 14px;
+}
+
+.chart-selector {
+    margin-bottom: 15px;
+}
+
+.chart-selector select {
+    font-size: 13px;
+    padding: 8px;
+    background-color: white;
+    border: 1px solid #bdc3c7;
+    border-radius: 4px;
+}
+
+.chart-container {
+    background: white;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    height: 220px;
+    margin-bottom: 10px;
+}
+
+.chart-container canvas {
+    width: 100% !important;
+    height: 180px !important;
+}
+
+.chart-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+    margin-top: 10px;
+    padding: 8px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    border: 1px solid #eee;
+    max-height: 80px;
+    overflow-y: auto;
+}
+
+.legend-item-small {
+    display: flex;
+    align-items: center;
+    font-size: 11px;
+    margin: 2px;
+    padding: 3px 6px;
+    background-color: white;
+    border-radius: 3px;
+    border: 1px solid #eee;
+    cursor: default;
+}
+
+.legend-color-small {
+    width: 12px;
+    height: 12px;
+    margin-right: 5px;
+    border-radius: 50%;
+    border: 1px solid rgba(0,0,0,0.1);
+}
+
+/* ============================================
+   RESPONSIVE PARA DROPDOWNS
+   ============================================ */
+@media (max-width: 768px) {
+    .stat-dropdown-menu {
+        position: relative !important;
+        float: none !important;
+        width: 100% !important;
+        margin-top: 5px !important;
+    }
+    
+    .chart-container {
+        height: 200px;
+    }
+    
+    .chart-container canvas {
+        height: 160px !important;
+    }
+}
+
+/* ============================================
+   MEJORAS VISUALES GENERALES
+   ============================================ */
+.panel-body {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+/* Scrollbar personalizado para dropdowns */
+.stat-dropdown-menu::-webkit-scrollbar {
+    width: 6px;
+}
+
+.stat-dropdown-menu::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.stat-dropdown-menu::-webkit-scrollbar-thumb {
+    background: #bdc3c7;
+    border-radius: 3px;
+}
+
+.chart-legend::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+}
+
+.chart-legend::-webkit-scrollbar-thumb {
+    background: #95a5a6;
+}

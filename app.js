@@ -1126,3 +1126,383 @@ $(function(){
     // Asegurar que el botón de sidebar sea visible
     $('.sidebar-toggle-btn').show();
 });
+
+// ============================================
+// FUNCIONES DE LEYENDA CORREGIDAS
+// ============================================
+
+function changeLegend(legendType) {
+    // Ocultar todas las leyendas primero
+    $('#legend').hide();
+    $('#location-legend').hide();
+    $('#wave-legend').hide();
+    
+    // Mostrar la leyenda seleccionada
+    if (legendType === 'damage') {
+        $('#legend').show();
+    } else if (legendType === 'location') {
+        $('#location-legend').show();
+    } else if (legendType === 'wave') {
+        $('#wave-legend').show();
+    }
+    
+    // Actualizar botones activos
+    $('.legend-toggle-btn').removeClass('active');
+    $('.legend-toggle-btn[data-target="' + legendType + '"]').addClass('active');
+    
+    // Cambiar estilo de los puntos en el mapa
+    if (vectorLayer) {
+        vectorLayer.setStyle(function(feature) {
+            return createStyle(feature, legendType);
+        });
+    }
+}
+
+// Asegurar que la leyenda de daño sea la default al cargar
+$(document).ready(function() {
+    setTimeout(function() {
+        changeLegend('damage');
+    }, 500);
+});
+
+// ============================================
+// FUNCIONES DE ESTADÍSTICAS ACTUALIZADAS
+// ============================================
+
+function calculateStatistics() {
+    var features = vectorSource.getFeatures();
+    var stats = {
+        total: features.length,
+        
+        // Por nivel de daño (desagregado)
+        danio: {
+            leve: features.filter(f => f.get('nivel_danio') === "1").length,
+            moderado: features.filter(f => f.get('nivel_danio') === "2").length,
+            severo: features.filter(f => f.get('nivel_danio') === "3").length
+        },
+        
+        // Por categoría de marejada (completamente desagregado)
+        marejada: {
+            N: features.filter(f => f.get('categoria_marejada') === "N").length,
+            N_plus: features.filter(f => f.get('categoria_marejada') === "N_plus").length,
+            M1: features.filter(f => f.get('categoria_marejada') === "M1").length,
+            M2: features.filter(f => f.get('categoria_marejada') === "M2").length,
+            M3: features.filter(f => f.get('categoria_marejada') === "M3").length,
+            M4: features.filter(f => f.get('categoria_marejada') === "M4").length,
+            M5: features.filter(f => f.get('categoria_marejada') === "M5").length
+        },
+        
+        // Por tipo de lugar
+        lugar: {
+            vereda: features.filter(f => f.get('tipo_lugar') === "vereda").length,
+            calzada_calle: features.filter(f => f.get('tipo_lugar') === "calzada_calle").length,
+            interior_vivienda: features.filter(f => f.get('tipo_lugar') === "interior_vivienda").length,
+            interior_comercio: features.filter(f => f.get('tipo_lugar') === "interior_comercio").length,
+            espacio_publico: features.filter(f => f.get('tipo_lugar') === "espacio_publico").length,
+            infraestructura: features.filter(f => f.get('tipo_lugar') === "infraestructura").length,
+            playa: features.filter(f => f.get('tipo_lugar') === "playa").length
+        },
+        
+        // Por afectación principal (completo)
+        afectacion: {
+            inundacion_vereda: features.filter(f => f.get('tipo_afectacion_principal') === "inundacion_vereda").length,
+            inundacion_calle: features.filter(f => f.get('tipo_afectacion_principal') === "inundacion_calle").length,
+            inundacion_vivienda: features.filter(f => f.get('tipo_afectacion_principal') === "inundacion_vivienda").length,
+            inundacion_comercio: features.filter(f => f.get('tipo_afectacion_principal') === "inundacion_comercio").length,
+            danio_infraestructura: features.filter(f => f.get('tipo_afectacion_principal') === "danio_infraestructura").length,
+            erosion: features.filter(f => f.get('tipo_afectacion_principal') === "erosion").length,
+            arrastre: features.filter(f => f.get('tipo_afectacion_principal') === "arrastre").length,
+            salpicaduras: features.filter(f => f.get('tipo_afectacion_principal') === "salpicaduras").length
+        }
+    };
+    
+    return stats;
+}
+
+function updateStatistics() {
+    var stats = calculateStatistics();
+    
+    // Actualizar total siempre visible
+    $('#total-reports').text(stats.total);
+    
+    // Nivel de daño
+    $('#damage-mild').text(stats.danio.leve);
+    $('#damage-moderate').text(stats.danio.moderado);
+    $('#damage-severe').text(stats.danio.severo);
+    
+    // Categorías de marejada (desagregadas)
+    $('#wave-n').text(stats.marejada.N);
+    $('#wave-n-plus').text(stats.marejada.N_plus);
+    $('#wave-m1').text(stats.marejada.M1);
+    $('#wave-m2').text(stats.marejada.M2);
+    $('#wave-m3').text(stats.marejada.M3);
+    $('#wave-m4').text(stats.marejada.M4);
+    $('#wave-m5').text(stats.marejada.M5);
+    
+    // Tipos de afectación
+    $('#affectation-street').text(stats.afectacion.inundacion_calle);
+    $('#affectation-house').text(stats.afectacion.inundacion_vivienda);
+    $('#affectation-sidewalk').text(stats.afectacion.inundacion_vereda);
+    $('#affectation-commerce').text(stats.afectacion.inundacion_comercio);
+    $('#affectation-infra').text(stats.afectacion.danio_infraestructura);
+    $('#affectation-erosion').text(stats.afectacion.erosion);
+    $('#affectation-drag').text(stats.afectacion.arrastre);
+    $('#affectation-splash').text(stats.afectacion.salpicaduras);
+    
+    // Tipo de lugar
+    $('#tipo-vereda').text(stats.lugar.vereda);
+    $('#tipo-calzada').text(stats.lugar.calzada_calle);
+    $('#tipo-vivienda').text(stats.lugar.interior_vivienda);
+    $('#tipo-comercio').text(stats.lugar.interior_comercio);
+    $('#tipo-espacio-publico').text(stats.lugar.espacio_publico);
+    $('#tipo-infraestructura').text(stats.lugar.infraestructura);
+    $('#tipo-playa').text(stats.lugar.playa);
+    
+    // Actualizar gráfico
+    updateChart();
+}
+
+// ============================================
+// FUNCIONES DE GRÁFICOS (TIPO TORTA/DONA)
+// ============================================
+
+var currentChart = null;
+
+function updateChart() {
+    var chartType = $('#chart-type-selector').val();
+    var stats = calculateStatistics();
+    
+    var chartData = getChartData(chartType, stats);
+    renderChart(chartData);
+}
+
+function getChartData(chartType, stats) {
+    var data = {};
+    
+    switch(chartType) {
+        case 'damage':
+            data = {
+                title: 'Distribución por Nivel de Daño',
+                labels: ['Leve (1)', 'Moderado (2)', 'Severo (3)'],
+                values: [stats.danio.leve, stats.danio.moderado, stats.danio.severo],
+                colors: ['#2ecc71', '#f39c12', '#e74c3c'],
+                total: stats.danio.leve + stats.danio.moderado + stats.danio.severo
+            };
+            break;
+            
+        case 'wave':
+            data = {
+                title: 'Distribución por Categoría de Marejada',
+                labels: ['N', 'N+', 'M1', 'M2', 'M3', 'M4', 'M5'],
+                values: [
+                    stats.marejada.N,
+                    stats.marejada.N_plus,
+                    stats.marejada.M1,
+                    stats.marejada.M2,
+                    stats.marejada.M3,
+                    stats.marejada.M4,
+                    stats.marejada.M5
+                ],
+                colors: ['#27ae60', '#f1c40f', '#e67e22', '#d35400', '#c0392b', '#8e44ad', '#2c3e50'],
+                total: Object.values(stats.marejada).reduce((a, b) => a + b, 0)
+            };
+            break;
+            
+        case 'location':
+            data = {
+                title: 'Distribución por Tipo de Lugar',
+                labels: ['Vereda', 'Calzada', 'Vivienda', 'Comercio', 'Esp. Público', 'Infraestructura', 'Playa'],
+                values: [
+                    stats.lugar.vereda,
+                    stats.lugar.calzada_calle,
+                    stats.lugar.interior_vivienda,
+                    stats.lugar.interior_comercio,
+                    stats.lugar.espacio_publico,
+                    stats.lugar.infraestructura,
+                    stats.lugar.playa
+                ],
+                colors: ['#3498db', '#9b59b6', '#e67e22', '#1abc9c', '#d35400', '#c0392b', '#16a085'],
+                total: Object.values(stats.lugar).reduce((a, b) => a + b, 0)
+            };
+            break;
+            
+        case 'affectation':
+            data = {
+                title: 'Distribución por Tipo de Afectación',
+                labels: ['Inund. Vereda', 'Inund. Calle', 'Inund. Vivienda', 'Inund. Comercio', 'Daño Infra', 'Erosión', 'Arrastre', 'Salpicaduras'],
+                values: [
+                    stats.afectacion.inundacion_vereda,
+                    stats.afectacion.inundacion_calle,
+                    stats.afectacion.inundacion_vivienda,
+                    stats.afectacion.inundacion_comercio,
+                    stats.afectacion.danio_infraestructura,
+                    stats.afectacion.erosion,
+                    stats.afectacion.arrastre,
+                    stats.afectacion.salpicaduras
+                ],
+                colors: ['#3498db', '#9b59b6', '#e67e22', '#1abc9c', '#d35400', '#c0392b', '#8e44ad', '#2c3e50'],
+                total: Object.values(stats.afectacion).reduce((a, b) => a + b, 0)
+            };
+            break;
+    }
+    
+    return data;
+}
+
+function renderChart(chartData) {
+    var ctx = document.getElementById('main-chart').getContext('2d');
+    
+    // Destruir gráfico anterior si existe
+    if (currentChart) {
+        currentChart.destroy();
+    }
+    
+    // Configurar tooltips personalizados
+    var tooltipCallbacks = {
+        label: function(context) {
+            var label = context.label || '';
+            var value = context.raw || 0;
+            var percentage = chartData.total > 0 ? Math.round((value / chartData.total) * 100) : 0;
+            return label + ': ' + value + ' (' + percentage + '%)';
+        }
+    };
+    
+    currentChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: chartData.labels,
+            datasets: [{
+                data: chartData.values,
+                backgroundColor: chartData.colors,
+                borderWidth: 1,
+                borderColor: '#fff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false // Ocultamos leyenda interna para usar la externa
+                },
+                title: {
+                    display: true,
+                    text: chartData.title,
+                    font: {
+                        size: 14
+                    }
+                },
+                tooltip: {
+                    callbacks: tooltipCallbacks
+                }
+            },
+            cutout: '50%' // Para hacerlo tipo dona
+        }
+    });
+    
+    // Actualizar leyenda externa
+    updateChartLegend(chartData);
+}
+
+function updateChartLegend(chartData) {
+    var legendHtml = '';
+    
+    chartData.labels.forEach(function(label, index) {
+        var value = chartData.values[index];
+        var percentage = chartData.total > 0 ? Math.round((value / chartData.total) * 100) : 0;
+        
+        legendHtml += `
+            <div class="legend-item-small" title="${label}: ${value} (${percentage}%)">
+                <div class="legend-color-small" style="background-color: ${chartData.colors[index]}"></div>
+                <span>${label.split(' ')[0]}</span>
+            </div>
+        `;
+    });
+    
+    $('#chart-legend').html(legendHtml);
+}
+
+// ============================================
+// INICIALIZACIÓN MEJORADA
+// ============================================
+
+$(function(){
+    // Inicializar tamaño de pantalla
+    checkScreenSize();
+    
+    // Cargar datos GeoJSON
+    loadGeoJSONData().then(function(features) {
+        initializeMapWithData(features);
+    });
+
+    // Configuración del sidebar
+    $('.sidebar-toggle-btn').on('click', function() {
+        toggleSidebar();
+    });
+
+    $(window).on("resize", function() {
+        checkScreenSize();
+        applyMargins();
+    });
+
+    // Configurar eventos de filtros
+    $('#filter-form').on('submit', function(e) {
+        e.preventDefault();
+        applyFilters();
+    });
+
+    $('#reset-filters').on('click', function() {
+        console.log("Limpiando filtros");
+        resetToAllData();
+    });
+
+    // Configurar búsqueda de ubicación
+    $('#search-form').on('submit', function(e) {
+        e.preventDefault();
+        const query = $('#search-input').val().trim();
+        searchLocation(query);
+    });
+
+    // Botón para buscar ubicación actual
+    $('#current-location-btn').on('click', function() {
+        searchCurrentLocation();
+    });
+
+    // Autocompletar en la búsqueda
+    $('#search-input').on('keypress', function(e) {
+        if (e.which === 13) {
+            e.preventDefault();
+            const query = $(this).val().trim();
+            searchLocation(query);
+        }
+    });
+
+    // Configurar botón de formulario Kobo
+    $('#open-kobo-form').on('click', function() {
+        window.open('https://ee.kobotoolbox.org/vs93MIxk');
+    });
+
+    // Configurar botones de leyenda (CORREGIDO)
+    $(document).on('click', '.legend-toggle-btn', function() {
+        var target = $(this).data('target');
+        changeLegend(target);
+    });
+
+    // Cambiar gráfico cuando se selecciona otro tipo
+    $('#chart-type-selector').on('change', function() {
+        updateChart();
+    });
+
+    // Asegurar que dropdowns de Bootstrap funcionen
+    $('.dropdown-toggle').dropdown();
+
+    applyMargins();
+    
+    // Asegurar que el botón de sidebar sea visible
+    $('.sidebar-toggle-btn').show();
+    
+    // Inicializar leyenda en daño por defecto
+    setTimeout(function() {
+        changeLegend('damage');
+    }, 1000);
+});
