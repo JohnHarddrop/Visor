@@ -1136,13 +1136,51 @@ $(function(){
     
     // Asegurar que el botón de sidebar sea visible
     $('.sidebar-toggle-btn').show();
+    // ============================================
+// CORRECCIÓN PARA SEARCH BAR
+// ============================================
+
+function initializeSearchBar() {
+    // Configurar búsqueda de ubicación
+    $('#search-form').off('submit').on('submit', function(e) {
+        e.preventDefault();
+        const query = $('#search-input').val().trim();
+        if (query) {
+            searchLocation(query);
+        } else {
+            alert('Por favor ingresa una ubicación para buscar');
+        }
+    });
+
+    // Botón para buscar ubicación actual
+    $('#current-location-btn').off('click').on('click', function() {
+        searchCurrentLocation();
+    });
+
+    // Autocompletar en la búsqueda
+    $('#search-input').off('keypress').on('keypress', function(e) {
+        if (e.which === 13) { // Enter key
+            e.preventDefault();
+            const query = $(this).val().trim();
+            if (query) {
+                searchLocation(query);
+            }
+        }
+    });
+}
 });
 
 // ============================================
 // FUNCIONES DE LEYENDA CORREGIDAS
 // ============================================
 
+// ============================================
+// FUNCIÓN CAMBIAR LEYENDA - CORREGIDA
+// ============================================
+
 function changeLegend(legendType) {
+    console.log("Cambiando leyenda a:", legendType);
+    
     // Ocultar todas las leyendas primero
     $('#legend').hide();
     $('#location-legend').hide();
@@ -1161,12 +1199,60 @@ function changeLegend(legendType) {
     $('.legend-toggle-btn').removeClass('active');
     $('.legend-toggle-btn[data-target="' + legendType + '"]').addClass('active');
     
-    // Cambiar estilo de los puntos en el mapa
+    // Cambiar estilo de los puntos en el mapa - CORREGIDO
     if (vectorLayer) {
         vectorLayer.setStyle(function(feature) {
             return createStyle(feature, legendType);
         });
+        
+        // Forzar redibujado del mapa
+        vectorLayer.changed();
+        console.log("Estilo cambiado para leyenda:", legendType);
     }
+}
+
+// Función createStyle actualizada para asegurar que funcione
+function createStyle(feature, styleType = 'damage') {
+    var color;
+    var radius = 10;
+    
+    // Obtener el valor según el tipo de estilo
+    switch(styleType) {
+        case 'damage':
+            var nivelDanio = feature.get('nivel_danio');
+            color = getColorByDamageLevel(nivelDanio);
+            break;
+            
+        case 'location':
+            var tipoLugar = feature.get('tipo_lugar');
+            color = getColorByLocationType(tipoLugar);
+            break;
+            
+        case 'wave':
+            var categoriaMarejada = feature.get('categoria_marejada');
+            color = getColorByWaveCategory(categoriaMarejada);
+            break;
+            
+        default:
+            var nivelDanio = feature.get('nivel_danio');
+            color = getColorByDamageLevel(nivelDanio);
+    }
+    
+    // Si no hay color, usar gris por defecto
+    if (!color) {
+        color = '#95a5a6';
+    }
+    
+    return new ol.style.Style({
+        image: new ol.style.Circle({
+            radius: radius,
+            fill: new ol.style.Fill({color: color}),
+            stroke: new ol.style.Stroke({
+                color: '#2c3e50',
+                width: 2
+            })
+        })
+    });
 }
 
 // Asegurar que la leyenda de daño sea la default al cargar
