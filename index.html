@@ -82,15 +82,36 @@
                 <div class="panel-body">
                   <form id="filter-form">
                     <div class="filter-group">
-                      <label for="filter-type">Tipo de Afectación:</label>
+                      <label for="filter-type">Tipo de Lugar:</label>
                       <select id="filter-type">
                         <option value="">Todos</option>
-                        <option value="inundacion_vereda">Inundación de vereda</option>
-                        <option value="inundacion_calle">Inundación de calle</option>
-                        <option value="inundacion_vivienda">Inundación de viviendas/comercio</option>
-                        <option value="danos_infraestructura">Daño a infraestructura costera</option>
-                        <option value="erosion">Erosión o socavón</option>
+                        <option value="calzada">Calzada</option>
+                        <option value="vereda">Vereda</option>
+                        <option value="playa">Playa</option>
+                        <option value="vivienda">Vivienda</option>
+                        <option value="infraestructura">Infraestructura</option>
                         <option value="otro">Otro</option>
+                      </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                      <label for="filter-category">Categoría Marejada:</label>
+                      <select id="filter-category">
+                        <option value="">Todos</option>
+                        <option value="N_plus">N+</option>
+                        <option value="N">N</option>
+                        <option value="N_minus">N-</option>
+                      </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                      <label for="filter-rain">Lluvia:</label>
+                      <select id="filter-rain">
+                        <option value="">Todos</option>
+                        <option value="no_lluvia">Sin lluvia</option>
+                        <option value="lluvia_leve">Lluvia leve</option>
+                        <option value="lluvia_moderada">Lluvia moderada</option>
+                        <option value="lluvia_intensa">Lluvia intensa</option>
                       </select>
                     </div>
                     
@@ -138,22 +159,45 @@
                   </div>
                   <hr>
                   <div class="stat-item">
-                    <strong>Inund. Vereda:</strong> <span id="inundacion-vereda" class="stat-value">0</span>
+                    <strong>Tipo Calzada:</strong> <span id="tipo-calzada" class="stat-value">0</span>
                   </div>
                   <div class="stat-item">
-                    <strong>Inund. Calle:</strong> <span id="inundacion-calle" class="stat-value">0</span>
+                    <strong>Tipo Vereda:</strong> <span id="tipo-vereda" class="stat-value">0</span>
                   </div>
                   <div class="stat-item">
-                    <strong>Inund. Vivienda:</strong> <span id="inundacion-vivienda" class="stat-value">0</span>
+                    <strong>Tipo Playa:</strong> <span id="tipo-playa" class="stat-value">0</span>
                   </div>
                   <div class="stat-item">
-                    <strong>Daños Infraestructura:</strong> <span id="danos-infraestructura" class="stat-value">0</span>
+                    <strong>Tipo Vivienda:</strong> <span id="tipo-vivienda" class="stat-value">0</span>
                   </div>
                   <div class="stat-item">
-                    <strong>Erosión/Socavón:</strong> <span id="erosion" class="stat-value">0</span>
+                    <strong>Tipo Infraestructura:</strong> <span id="tipo-infraestructura" class="stat-value">0</span>
                   </div>
                   <div class="stat-item">
-                    <strong>Otro:</strong> <span id="otro" class="stat-value">0</span>
+                    <strong>Tipo Otro:</strong> <span id="tipo-otro" class="stat-value">0</span>
+                  </div>
+                  <hr>
+                  <div class="stat-item">
+                    <strong>Categoría N+:</strong> <span id="categoria-n-plus" class="stat-value">0</span>
+                  </div>
+                  <div class="stat-item">
+                    <strong>Categoría N:</strong> <span id="categoria-n" class="stat-value">0</span>
+                  </div>
+                  <div class="stat-item">
+                    <strong>Categoría N-:</strong> <span id="categoria-n-minus" class="stat-value">0</span>
+                  </div>
+                  <hr>
+                  <div class="stat-item">
+                    <strong>Sin Lluvia:</strong> <span id="lluvia-no" class="stat-value">0</span>
+                  </div>
+                  <div class="stat-item">
+                    <strong>Lluvia Leve:</strong> <span id="lluvia-leve" class="stat-value">0</span>
+                  </div>
+                  <div class="stat-item">
+                    <strong>Lluvia Moderada:</strong> <span id="lluvia-moderada" class="stat-value">0</span>
+                  </div>
+                  <div class="stat-item">
+                    <strong>Lluvia Intensa:</strong> <span id="lluvia-intensa" class="stat-value">0</span>
                   </div>
                 </div>
               </div>
